@@ -1,0 +1,39 @@
+/* Tab Styles */
+.tab-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 30px;
+    border: none;
+    background: #F1F5F9;
+    color: #475569;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab-button:hover {
+    background: #E2E8F0;
+    color: #334155;
+}
+
+.tab-button.active {
+    background: var(--optimism-blue);
+    color: #F1F5F9;
+    box-shadow: 0 2px 8px rgba(38, 156, 204, 0.2);
+}
+
+.tab-button:focus {
+    outline: none;
+}
+

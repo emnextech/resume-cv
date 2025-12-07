@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV & Résumé Generator - Builder</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/tabs.css">
+    <link rel="stylesheet" href="styles/preview.css">
+    <link rel="stylesheet" href="styles/builder-enhancements.css">
+    <link rel="stylesheet" href="styles/export-enhancements.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header style="display: none;">
+            <div>
+                <h1 id="builder-title">CV & Résumé Generator</h1>
+            </div>
+        </header>
+
+        <!-- Sticky Navbar with Preview Controls -->
+        <nav class="preview-navbar">
+            <div class="navbar-left">
+                <a href="index.html" class="back-button-navbar" title="Back to Home">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="navbar-controls">
+                <div class="template-selector">
+                    <label for="template-select">Template:</label>
+                    <select id="template-select">
+                        <option value="modern">Modern</option>
+                        <option value="classic">Classic</option>
+                        <option value="bold">Bold</option>
+                    </select>
+                </div>
+                <div class="color-selector">
+                    <label for="color-select">Color:</label>
+                    <select id="color-select">
+                        <option value="optimism-blue">Optimism Blue</option>
+                        <option value="blue-algae">Blue Algae</option>
+                        <option value="flat-grey">Flat Grey</option>
+                        <option value="classic-blue">Classic Blue</option>
+                        <option value="forest-green">Forest Green</option>
+                        <option value="burgundy">Burgundy</option>
+                        <option value="charcoal">Charcoal</option>
+                        <option value="navy">Navy</option>
+                    </select>
+                </div>
+                <div class="font-selector">
+                    <label for="font-select">Font:</label>
+                    <select id="font-select">
+                        <option value="system">System Default</option>
+                        <option value="serif">Serif (Times)</option>
+                        <option value="sans-serif">Sans-Serif (Arial)</option>
+                        <option value="modern">Modern (Roboto)</option>
+                        <option value="classic">Classic (Georgia)</option>
+                        <option value="monospace">Monospace (Courier)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="navbar-download">
+                <button id="export-pdf" class="download-btn">Download PDF</button>
+                <button id="export-docx" class="download-btn">Download DOCX</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- CV Form Section -->
+            <section id="cv-section" class="form-section" style="display: none;">
+                <div class="form-container">
+                    <!-- Personal Information -->
+                    <div class="form-group" id="cv-personal-info">
+                        <h3>Personal Information</h3>
+                        <input type="text" id="cv-name" placeholder="e.g., John Banda" data-field="name">
+                        <input type="email" id="cv-email" placeholder="e.g., john.banda@email.com" data-field="email">
+                        <input type="tel" id="cv-phone" placeholder="e.g., +123 456 7890" data-field="phone">
+                        <input type="text" id="cv-address" placeholder="e.g., 123 Main St, City, Country" data-field="address">
+                        <input type="url" id="cv-website" placeholder="e.g., https://www.linkedin.com/in/johnbanda" data-field="website">
+                    </div>
+
+                    <!-- Professional Summary -->
+                    <div class="form-group" id="cv-summary-section">
+                        <h3>Professional Summary</h3>
+                        <textarea id="cv-summary" rows="4" placeholder="Write 2-4 sentences highlighting your key qualifications and career objectives..." data-field="summary"></textarea>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="form-group">
+                        <h3>Academic Qualifications</h3>
+                        <div class="education-table-container">
+                            <table id="cv-education-table" class="education-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Level</th>
+                                        <th>School</th>
+                                        <th>Qualification</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cv-education-container">
+                                    <!-- Rows will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="add-btn" data-add="education">+ Add Row</button>
+                    </div>
+
+                    <!-- Work Experience -->
+                    <div class="form-group">
+                        <h3>Work Experience</h3>
+                        <div id="cv-work-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Job Title" data-field="title">
+                                <input type="text" class="entry-field" placeholder="Company" data-field="company">
+                                <input type="text" class="entry-field" placeholder="Period (e.g., 2020-2023)" data-field="period">
+                                <textarea class="entry-field" rows="3" placeholder="Description" data-field="description"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="work">+ Add Experience</button>
+                    </div>
+
+                    <!-- Research Experience -->
+                    <div class="form-group" id="cv-research-section">
+                        <h3>Research Experience</h3>
+                        <div id="cv-research-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Research Title" data-field="title">
+                                <input type="text" class="entry-field" placeholder="Institution" data-field="institution">
+                                <input type="text" class="entry-field" placeholder="Period" data-field="period">
+                                <textarea class="entry-field" rows="3" placeholder="Description" data-field="description"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="research">+ Add Research</button>
+                    </div>
+
+                    <!-- Publications -->
+                    <div class="form-group" id="cv-publications-section">
+                        <h3>Publications</h3>
+                        <div id="cv-publications-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Publication Title" data-field="title">
+                                <input type="text" class="entry-field" placeholder="Journal/Conference" data-field="venue">
+                                <input type="text" class="entry-field" placeholder="Year" data-field="year">
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="publications">+ Add Publication</button>
+                    </div>
+
+                    <!-- Certifications -->
+                    <div class="form-group" id="cv-certifications-section">
+                        <h3>Certifications</h3>
+                        <div id="cv-certifications-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Certification Name" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Issuing Organization" data-field="issuer">
+                                <input type="text" class="entry-field" placeholder="Year" data-field="year">
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="certifications">+ Add Certification</button>
+                    </div>
+
+                    <!-- Conferences / Workshops -->
+                    <div class="form-group" id="cv-conferences-section">
+                        <h3>Conferences / Workshops</h3>
+                        <div id="cv-conferences-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Event Name" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Location" data-field="location">
+                                <input type="text" class="entry-field" placeholder="Year" data-field="year">
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="conferences">+ Add Conference</button>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="form-group" id="cv-achievements-section">
+                        <h3>Achievements</h3>
+                        <div id="cv-achievements-container">
+                            <div class="entry-item">
+                                <textarea class="entry-field" rows="2" placeholder="Achievement description" data-field="description"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="achievements">+ Add Achievement</button>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="form-group">
+                        <h3>Projects</h3>
+                        <div id="cv-projects-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Project Name" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Technologies Used" data-field="tech">
+                                <textarea class="entry-field" rows="3" placeholder="Description" data-field="description"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="projects">+ Add Project</button>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="form-group" id="cv-skills-section">
+                        <h3>Skills</h3>
+                        <textarea id="cv-skills" rows="4" placeholder="e.g., Python, JavaScript, React, Node.js, Networking, UI Design (comma-separated or one per line)" data-field="skills"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Résumé Form Section -->
+            <section id="resume-section" class="form-section" style="display: none;">
+                <div class="form-container">
+                    <!-- Contact Information -->
+                    <div class="form-group" id="resume-contact-info">
+                        <h3>Contact Information</h3>
+                        <input type="text" id="resume-name" placeholder="e.g., Sarah Johnson" data-field="name">
+                        <input type="email" id="resume-email" placeholder="e.g., sarah.j@email.com" data-field="email">
+                        <input type="tel" id="resume-phone" placeholder="e.g., +1 (555) 123-4567" data-field="phone">
+                        <input type="text" id="resume-location" placeholder="e.g., New York, NY" data-field="location">
+                        <input type="url" id="resume-linkedin" placeholder="e.g., https://linkedin.com/in/sarahjohnson" data-field="linkedin">
+                    </div>
+
+                    <!-- Short Summary -->
+                    <div class="form-group" id="resume-summary-section">
+                        <h3>Professional Summary</h3>
+                        <textarea id="resume-summary" rows="3" placeholder="Keep it concise - 2-3 lines that summarize your professional experience and goals..." data-field="summary"></textarea>
+                    </div>
+
+                    <!-- Key Skills -->
+                    <div class="form-group" id="resume-skills-section">
+                        <h3>Key Skills</h3>
+                        <textarea id="resume-skills" rows="3" placeholder="e.g., JavaScript, React, Node.js, Python, AWS (comma-separated)" data-field="skills"></textarea>
+                    </div>
+
+                    <!-- Work Experience -->
+                    <div class="form-group" id="resume-work-section">
+                        <h3>Work Experience</h3>
+                        <div id="resume-work-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Job Title" data-field="title">
+                                <input type="text" class="entry-field" placeholder="Company" data-field="company">
+                                <input type="text" class="entry-field" placeholder="Period" data-field="period">
+                                <textarea class="entry-field" rows="2" placeholder="Key achievements (bullet points)" data-field="achievements"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="work">+ Add Experience</button>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="form-group" id="resume-projects-section">
+                        <h3>Projects</h3>
+                        <div id="resume-projects-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Project Name" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Technologies" data-field="tech">
+                                <textarea class="entry-field" rows="2" placeholder="Brief description" data-field="description"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="projects">+ Add Project</button>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="form-group" id="resume-education-section">
+                        <h3>Academic Qualifications</h3>
+                        <div class="education-table-container">
+                            <table id="resume-education-table" class="education-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Level</th>
+                                        <th>School</th>
+                                        <th>Qualification</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resume-education-container">
+                                    <!-- Rows will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="add-btn" data-add="education">+ Add Row</button>
+                    </div>
+
+                    <!-- Certifications (Optional) -->
+                    <div class="form-group" id="resume-certifications-section">
+                        <h3>Certifications (Optional)</h3>
+                        <div id="resume-certifications-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Certification" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Year" data-field="year">
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="certifications">+ Add Certification</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Preview Section -->
+            <aside class="preview-section">
+                <div class="preview-container">
+                    <div id="preview-content" class="preview-content">
+                        <!-- Preview content will be dynamically generated -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Export Progress Bar -->
+    <div class="export-progress" id="export-progress">
+        <div class="export-progress-bar" id="export-progress-bar"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/builder-init.js"></script>
+    <script src="js/cv-form.js"></script>
+    <script src="js/resume-form.js"></script>
+    <script src="js/preview.js"></script>
+    <script src="js/preview-enhancements.js"></script>
+    <script src="js/pdf-export.js"></script>
+    <script src="js/doc-export.js"></script>
+    <script src="js/export-enhancements.js"></script>
+    <script src="js/builder-enhancements.js"></script>
+</body>
+</html>

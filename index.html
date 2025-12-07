@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV & Résumé Generator</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+        }
+
+        .landing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 60px 20px 80px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-section h1 {
+            font-size: clamp(2.5em, 5vw, 4em);
+            color: #269ccc;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .hero-section .subtitle {
+            font-size: clamp(1.1em, 2vw, 1.4em);
+            color: #475569;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #334155;
+            font-size: 0.95em;
+        }
+
+        .hero-feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(38, 156, 204, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-feature-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #269ccc;
+        }
+
+        /* Choice Cards */
+        .choice-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .choice-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .choice-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .choice-card h2 {
+            color: #0F172A;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            transition: color 0.3s ease;
+        }
+
+        .choice-card:hover h2 {
+            color: #269ccc;
+        }
+
+        .choice-card p {
+            color: #64748B;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .choice-card.cv-card {
+            border-top: 4px solid #269ccc;
+        }
+
+        .choice-card.cv-card::before {
+            color: #269ccc;
+        }
+
+        .choice-card.resume-card {
+            border-top: 4px solid #9ed2c5;
+        }
+
+        .choice-card.resume-card::before {
+            color: #9ed2c5;
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s ease;
+        }
+
+        .choice-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Footer */
+        footer {
+            background: #0F172A;
+            color: #F1F5F9;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #269ccc;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #CBD5E1;
+            text-decoration: none;
+            line-height: 1.8;
+            font-size: 0.9em;
+        }
+
+        .footer-section a:hover {
+            color: #269ccc;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #94A3B8;
+            font-size: 0.85em;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(38, 156, 204, 0.2);
+            border-top-color: #269ccc;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            color: #F1F5F9;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .landing-container {
+                padding: 20px 15px;
+            }
+
+            .hero-section {
+                padding: 40px 15px 50px;
+                margin-bottom: 40px;
+            }
+
+            .hero-features {
+                gap: 30px;
+                margin-top: 30px;
+            }
+
+            .choice-cards {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin-bottom: 60px;
+            }
+
+            .choice-card {
+                padding: 30px 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .footer-section {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section h1 {
+                font-size: 2em;
+            }
+
+            .hero-section .subtitle {
+                font-size: 1em;
+            }
+
+            .choice-card h2 {
+                font-size: 1.5em;
+            }
+
+            .card-icon {
+                width: 56px;
+                height: 56px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>CV & Résumé Generator</h1>
+            <p class="subtitle">Create professional, ATS-friendly CVs and résumés in minutes. No design skills required—just fill in your information and export to PDF or Word.</p>
+            
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <span>Fast & Easy</span>
+                </div>
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <path d="M9 9h6v6H9z"/>
+                        </svg>
+                    </div>
+                    <span>Professional Templates</span>
+                </div>
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
+                    <span>Export to PDF/Word</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Choice Cards -->
+        <div class="choice-cards">
+            <a href="mainBuilder.html?type=cv" class="choice-card cv-card" data-type="cv">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#269ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </div>
+                <h2>CV Builder</h2>
+                <p>Create a comprehensive Curriculum Vitae with detailed sections for education, research, publications, conferences, and more. Perfect for academic and research positions.</p>
+            </a>
+
+            <a href="mainBuilder.html?type=resume" class="choice-card resume-card" data-type="resume">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#9ed2c5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    </svg>
+                </div>
+                <h2>Résumé Builder</h2>
+                <p>Build a concise, professional résumé focused on work experience, skills, and achievements. Ideal for industry jobs and career opportunities.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About</h3>
+                <p>Professional CV and Résumé builder designed to help you create standout documents that get you noticed by employers and recruiters.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Features</h3>
+                <ul class="footer-links">
+                    <li><a href="#templates">Professional Templates</a></li>
+                    <li><a href="#export">PDF & Word Export</a></li>
+                    <li><a href="#customization">Easy Customization</a></li>
+                    <li><a href="#ats">ATS-Friendly Format</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#tips">CV Writing Tips</a></li>
+                    <li><a href="#examples">Example CVs</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CV & Résumé Generator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Builder...</div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth transition when navigating to builder
+        document.querySelectorAll('.choice-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                
+                // Show loading overlay
+                loadingOverlay.classList.add('active');
+                
+                // Navigate after a brief delay for smooth transition
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 300);
+            });
+        });
+
+        // Add fade-in animation to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.choice-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>
