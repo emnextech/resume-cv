@@ -14,10 +14,39 @@
     margin: 0 auto;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-    /* Standard A4 margins: 1 inch = 96px */
-    padding: 96px;
-    box-sizing: border-box;
+}
+
+/* Mobile Responsive Preview */
+@media (max-width: 1024px) {
+    .preview-content {
+        width: 100%;
+        padding: var(--spacing-lg, 24px);
+        min-height: auto;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+    }
+
+    .preview-content .preview-name {
+        font-size: clamp(1.5rem, 5vw, 2.2em) !important;
+    }
+
+    .preview-content .preview-section-title {
+        font-size: clamp(1.1rem, 3vw, 1.4em) !important;
+    }
+
+    .preview-content .preview-entry-title {
+        font-size: clamp(0.95rem, 2.5vw, 1.1em) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .preview-content {
+        padding: var(--spacing-md, 16px);
+        font-size: 0.875rem;
+    }
+
+    .preview-container {
+        padding: var(--spacing-xs, 4px) !important;
+    }
 }
 
 /* Modern Template */

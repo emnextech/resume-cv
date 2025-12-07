@@ -32,7 +32,7 @@ class UXEnhancements {
             // Removed setupLoadingSkeletons() - preview updates should be instant/live
             this.setupEmptyStates();
             this.setupOnboardingTour();
-            this.setupHelpModal();
+            // Removed setupHelpModal() - help button removed per user request
             this.setupKeyboardShortcuts();
             this.setupExampleData();
             // Removed initializeHistory() - not needed without undo/redo
@@ -520,16 +520,13 @@ class UXEnhancements {
                 
                 utilityControls = document.createElement('div');
                 utilityControls.className = 'utility-controls';
-                // Insert after navbar-left to place on left side
-                const navbarLeft = navbar.querySelector('.navbar-left');
-                if (navbarLeft) {
-                    navbarLeft.appendChild(utilityControls);
+                // Place on right side next to download button
+                const navbarDownload = navbar.querySelector('.navbar-download');
+                if (navbarDownload) {
+                    navbar.insertBefore(utilityControls, navbarDownload);
                 } else {
-                    // If navbar-left doesn't exist, create it
-                    const newNavbarLeft = document.createElement('div');
-                    newNavbarLeft.className = 'navbar-left';
-                    newNavbarLeft.appendChild(utilityControls);
-                    navbar.insertBefore(newNavbarLeft, navbar.firstChild);
+                    // If download section doesn't exist, append to navbar
+                    navbar.appendChild(utilityControls);
                 }
             }
 
@@ -647,37 +644,8 @@ class UXEnhancements {
     // ============================================
 
     setupKeyboardShortcuts() {
-        // Show keyboard shortcut hint
-        this.showKeyboardHint();
-
-        // Listen for ? key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-                const activeElement = document.activeElement;
-                if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    this.showKeyboardShortcutsModal();
-                }
-            }
-
-            // Undo/Redo shortcuts disabled - undo/redo buttons removed per user request
-            // Keyboard shortcuts for undo/redo no longer work
-        });
-    }
-
-    showKeyboardHint() {
-        const hint = document.createElement('div');
-        hint.className = 'keyboard-shortcut-hint';
-        hint.innerHTML = `
-            Press <span class="keyboard-shortcut-hint-key">?</span> for keyboard shortcuts
-        `;
-        document.body.appendChild(hint);
-
-        // Hide after 5 seconds
-        setTimeout(() => {
-            hint.style.opacity = '0';
-            setTimeout(() => hint.remove(), 300);
-        }, 5000);
+        // Keyboard shortcut hint and ? key listener removed per user request
+        // No keyboard shortcuts popup functionality
     }
 
     showKeyboardShortcutsModal() {

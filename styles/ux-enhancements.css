@@ -709,51 +709,14 @@ a:focus-visible,
     font-size: var(--font-size-sm, 0.875rem);
 }
 
-/* Help button in navbar */
+/* Help button in navbar - Hidden per user request */
 .help-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 5px;
-    background: var(--bg-primary, white);
-    border: 2px solid var(--border-light, #E2E8F0);
-    color: var(--text-secondary, #334155);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: var(--font-weight-bold, 700);
-    font-size: var(--font-size-lg, 1.125rem);
+    display: none !important;
 }
 
-.help-btn:hover {
-    background: var(--optimism-blue, #1a7fa3);
-    color: white;
-    border-color: var(--optimism-blue, #1a7fa3);
-    transform: scale(1.1);
-}
-
-.help-btn:focus-visible {
-    outline: 3px solid var(--optimism-blue, #1a7fa3);
-    outline-offset: 2px;
-}
-
-/* Keyboard shortcut hint */
+/* Keyboard shortcut hint - Hidden per user request */
 .keyboard-shortcut-hint {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: var(--bg-primary, white);
-    padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-size: var(--font-size-sm, 0.875rem);
-    color: var(--text-tertiary, #475569);
-    z-index: 9998;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid var(--border-light, #E2E8F0);
+    display: none !important;
 }
 
 .keyboard-shortcut-hint-key {

@@ -24,18 +24,20 @@
     gap: 15px;
 }
 
-/* Utility Controls Group - Groups save and help buttons together - moved to left side */
+/* Utility Controls Group - Groups save and help buttons together - moved to right side */
 .utility-controls {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 0 8px;
-    order: 1;
+    order: 3;
+    margin-left: auto;
 }
 
 @media (max-width: 1024px) {
     .utility-controls {
-        order: 1; /* Stay on left side */
+        order: 3; /* Stay on right side */
+        margin-left: auto;
     }
 }
 
@@ -68,17 +70,14 @@
 }
 
 .save-draft-btn .autosave-indicator {
-    font-size: 12px;
-    font-weight: normal;
-    opacity: 0.9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
 }
 
-.save-draft-btn .autosave-indicator.saving {
-    color: #FBBF24;
-}
-
-.save-draft-btn .autosave-indicator.saved {
-    color: #10B981;
+.save-draft-btn .autosave-indicator.saved svg {
+    display: block;
 }
 
 .progress-container {
@@ -302,6 +301,13 @@
 .section-checkmark.completed {
     background: #10B981;
     color: white;
+}
+
+/* Hide checkmarks on mobile */
+@media (max-width: 1024px) {
+    .section-checkmark {
+        display: none !important;
+    }
 }
 
 /* Notifications */

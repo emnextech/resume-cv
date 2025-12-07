@@ -239,13 +239,18 @@
         .social-link:hover {
             background: #269ccc;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(38, 156, 204, 0.3);
+            transform: translateY(-4px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(38, 156, 204, 0.5);
         }
 
         .social-link svg {
             width: 20px;
             height: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover svg {
+            fill: white;
         }
 
         /* Shimmer Loading Overlay */
@@ -469,13 +474,14 @@
             background: white;
             padding: 20px 40px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             margin-bottom: 0;
         }
 
         .navbar-brand {
+            justify-self: start;
             font-size: 1.5em;
             font-weight: 700;
             color: #269ccc;
@@ -484,6 +490,72 @@
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        .navbar-links {
+            justify-self: center;
+        }
+
+        .navbar-social {
+            justify-self: end;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: #269ccc;
+            font-size: 1.5em;
+            z-index: 1001;
+        }
+
+        .mobile-menu-toggle:focus {
+            outline: 2px solid #269ccc;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #269ccc;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            display: block;
+            opacity: 1;
         }
 
         .navbar-brand:hover {
@@ -508,21 +580,47 @@
 
         .navbar-links {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             align-items: center;
             list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links li {
+            margin: 0;
         }
 
         .navbar-links a {
             color: #334155;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
             font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 8px;
+            position: relative;
         }
 
         .navbar-links a:hover {
             color: #269ccc;
+            background: rgba(38, 156, 204, 0.1);
+        }
+
+        .navbar-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #269ccc;
+            transition: width 0.3s ease;
+        }
+
+        .navbar-links a:hover::after {
+            width: 80%;
         }
 
         .navbar-social {
@@ -668,13 +766,78 @@
         @media (max-width: 768px) {
             .main-navbar {
                 padding: 15px 20px;
-                flex-wrap: wrap;
+                grid-template-columns: auto 1fr auto;
+                gap: 15px;
+                justify-items: stretch;
             }
 
+            .mobile-menu-toggle {
+                display: block;
+                justify-self: start;
+            }
+
+            .navbar-brand {
+                justify-self: center;
+                font-size: 1.3em;
+            }
 
             .navbar-links {
-                gap: 20px;
-                font-size: 0.9em;
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                gap: 0;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+            }
+
+            .navbar-links.active {
+                display: flex;
+            }
+
+            .navbar-links li {
+                width: 100%;
+                border-bottom: 1px solid #E2E8F0;
+            }
+
+            .navbar-links li:last-child {
+                border-bottom: none;
+            }
+
+            .navbar-links a {
+                display: block;
+                padding: 15px 0;
+                width: 100%;
+                text-align: center;
+                font-size: 1em;
+            }
+
+            .navbar-links a::after {
+                display: none;
+            }
+
+            .navbar-social {
+                display: none;
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 15px 20px;
+                justify-content: center;
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+            }
+
+            .navbar-social.active {
+                display: flex;
             }
 
             .hero-buttons {
@@ -690,31 +853,44 @@
             .faq-section h2 {
                 font-size: 2em;
             }
+
+            .features-section {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    
     <!-- Navbar -->
     <nav class="main-navbar">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <a href="#" class="navbar-brand">
             <span class="navbar-brand-text">CareerCraft</span>
         </a>
-        <ul class="navbar-links">
+        <ul class="navbar-links" id="navbarLinks">
             <li><a href="#features-section">Features</a></li>
             <li><a href="#faq-section">FAQ</a></li>
         </ul>
-        <div class="navbar-social">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
+        <div class="navbar-social" id="navbarSocial">
+            <a href="https://web.facebook.com/profile.php?id=61583652779828" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
             </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
+            <a href="https://github.com/emnextech" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
+            <a href="https://www.instagram.com/emnex31/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
@@ -742,17 +918,11 @@
             <div class="faq-item">
                 <div class="faq-question">Can I export my CV to different formats?</div>
                 <div class="faq-answer">
-                    <p>Yes! You can export your completed CV in multiple formats. Download as PDF for online applications and email submissions, or export as Word document (DOCX) for easy editing in Microsoft Word or Google Docs. All exports maintain professional formatting and quality.</p>
+                    <p>You can export your completed CV as a Word document (DOCX) file. This format allows you to easily edit your CV in Microsoft Word, Google Docs, or any compatible word processor. The DOC format gives you full control to make further edits, adjustments, or additions to your CV after exporting.</p>
                 </div>
             </div>
 
-            <div class="faq-item">
-                <div class="faq-question">Are the templates ATS-friendly?</div>
-                <div class="faq-answer">
-                    <p>Yes, all our templates are designed to be ATS (Applicant Tracking System) friendly. They use standard formatting, clear section headers, and avoid complex layouts that might confuse ATS software. This ensures your CV can be properly parsed and read by automated systems used by many employers.</p>
-                </div>
-            </div>
-
+         
             <div class="faq-item">
                 <div class="faq-question">Can I customize the colors and fonts?</div>
                 <div class="faq-answer">
@@ -771,6 +941,13 @@
                 <div class="faq-question">Do I need to create an account?</div>
                 <div class="faq-answer">
                     <p>No account required! You can start building your CV immediately. Simply fill in your information, customize the design, and export when you're ready. The entire process is free and doesn't require any registration.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is this service free? Do you accept payments?</div>
+                <div class="faq-answer">
+                    <p>Yes, this website is completely free! We do not accept any payments. All features including template selection, customization options, and CV export are available at no cost. You can use all the tools and features without any charges or hidden fees.</p>
                 </div>
             </div>
         </section>
@@ -797,8 +974,8 @@
                         <line x1="16" y1="17" x2="8" y2="17"/>
                     </svg>
                 </div>
-                <h3>PDF & Word Export</h3>
-                <p>Export your completed CV or résumé in multiple formats. Download as PDF for online applications and email submissions, or export as Word document (DOCX) for easy editing in Microsoft Word or Google Docs. All exports maintain professional formatting and quality.</p>
+                <h3>Word Document Export</h3>
+                <p>Export your completed CV as a Word document (DOCX) file. This format allows you to easily edit your CV in Microsoft Word, Google Docs, or any compatible word processor. The DOC format gives you full control to make further edits, adjustments, or additions to your CV after exporting.</p>
             </div>
 
             <div id="customization" class="feature-item">
@@ -819,30 +996,31 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About</h3>
-                <p>Professional CV and Résumé builder designed to help you create standout documents that get you noticed by employers and recruiters.</p>
+                <p>Professional CV builder designed to help you create standout documents that get you noticed by employers and recruiters.</p>
             </div>
             <div class="footer-section">
                 <h3>Features</h3>
                 <ul class="footer-links">
                     <li><a href="#templates" onclick="document.getElementById('templates').scrollIntoView({behavior: 'smooth', block: 'start'}); return false;">Professional Templates</a></li>
-                    <li><a href="#export" onclick="document.getElementById('export').scrollIntoView({behavior: 'smooth', block: 'start'}); return false;">PDF & Word Export</a></li>
+                    <li><a href="#export" onclick="document.getElementById('export').scrollIntoView({behavior: 'smooth', block: 'start'}); return false;">Word Document Export</a></li>
                     <li><a href="#customization" onclick="document.getElementById('customization').scrollIntoView({behavior: 'smooth', block: 'start'}); return false;">Easy Customization</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Connect</h3>
+                <p style="color: #94A3B8; font-size: 0.85em; margin-bottom: 15px;">Support by following and sharing</p>
                 <div class="social-links">
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
+                    <a href="https://web.facebook.com/profile.php?id=61583652779828" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
                     </a>
-                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
+                    <a href="https://github.com/emnextech" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                         </svg>
                     </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
+                    <a href="https://www.instagram.com/emnex31/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                         </svg>
@@ -851,7 +1029,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 ResuDraft. Built with <span class="heart">❤️</span> by <strong>Emnex</strong></p>
+            <p>&copy; 2024 CareerCraft. Built with <span class="heart">❤️</span> by <strong><a href="https://emnextech.github.io/emnex.github.io/" target="_blank" rel="noopener noreferrer" style="color: #269ccc; text-decoration: none;">Emnex</a></strong></p>
         </div>
     </footer>
 
@@ -884,8 +1062,44 @@
             });
         });
 
-        // FAQ Accordion functionality
+        // Mobile Menu Toggle
         document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const navbarLinks = document.getElementById('navbarLinks');
+            const navbarSocial = document.getElementById('navbarSocial');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+            function toggleMenu() {
+                const isActive = mobileMenuToggle.classList.contains('active');
+                
+                if (isActive) {
+                    mobileMenuToggle.classList.remove('active');
+                    navbarLinks.classList.remove('active');
+                    navbarSocial.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    mobileMenuToggle.classList.add('active');
+                    navbarLinks.classList.add('active');
+                    navbarSocial.classList.add('active');
+                    mobileMenuOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            mobileMenuToggle.addEventListener('click', toggleMenu);
+            mobileMenuOverlay.addEventListener('click', toggleMenu);
+
+            // Close menu when clicking on a link
+            navbarLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // FAQ Accordion functionality
             const faqItems = document.querySelectorAll('.faq-item');
             
             faqItems.forEach(item => {

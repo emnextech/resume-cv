@@ -23,9 +23,17 @@
             </div>
         </header>
 
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+
         <!-- Sticky Navbar with Preview Controls -->
         <nav class="preview-navbar">
             <div class="navbar-left">
+                <button class="mobile-menu-toggle-builder" id="mobileMenuToggleBuilder" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <a href="index.html" class="back-button-navbar" title="Back to Home">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -33,7 +41,7 @@
                 </a>
                 <span class="navbar-brand-text">CareerCraft</span>
             </div>
-            <div class="navbar-controls">
+            <div class="navbar-controls" id="navbarControls">
                 <div class="template-selector">
                     <label for="template-select">Template:</label>
                     <select id="template-select">
@@ -78,6 +86,15 @@
                 </button>
             </div>
         </nav>
+
+        <!-- See Preview Button (Mobile Only) -->
+        <button class="mobile-see-preview-btn" id="mobileSeePreviewBtn">
+            <span>See Preview</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
 
         <!-- Main Content Area -->
         <div class="main-content">
@@ -307,6 +324,54 @@
 
             <!-- Preview Section -->
             <aside class="preview-section">
+                <!-- Mobile Preview Controls -->
+                <div class="mobile-preview-controls" id="mobilePreviewControls">
+                    <button class="mobile-back-to-form-btn" id="mobileBackToFormBtn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 12L6 8L10 4"/>
+                        </svg>
+                        <span>Form</span>
+                    </button>
+                    <div class="mobile-control-group">
+                        <label for="mobile-color-select">Color</label>
+                        <select id="mobile-color-select">
+                            <option value="optimism-blue">Optimism Blue</option>
+                            <option value="blue-algae">Blue Algae</option>
+                            <option value="flat-grey">Flat Grey</option>
+                            <option value="classic-blue">Classic Blue</option>
+                            <option value="forest-green">Forest Green</option>
+                            <option value="burgundy">Burgundy</option>
+                            <option value="charcoal">Charcoal</option>
+                            <option value="navy">Navy</option>
+                        </select>
+                    </div>
+                    <div class="mobile-control-group">
+                        <label for="mobile-template-select">Template</label>
+                        <select id="mobile-template-select">
+                            <option value="modern">Modern</option>
+                            <option value="classic">Classic</option>
+                            <option value="bold">Bold</option>
+                        </select>
+                    </div>
+                    <div class="mobile-control-group">
+                        <label for="mobile-font-select">Font</label>
+                        <select id="mobile-font-select">
+                            <option value="system">System</option>
+                            <option value="serif">Serif</option>
+                            <option value="sans-serif">Sans-Serif</option>
+                            <option value="modern">Modern</option>
+                            <option value="classic">Classic</option>
+                            <option value="monospace">Monospace</option>
+                        </select>
+                    </div>
+                    <button id="mobile-download-btn" class="mobile-download-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </button>
+                </div>
                 <div class="preview-container">
                     <div id="preview-content" class="preview-content">
                         <!-- Preview content will be dynamically generated -->
@@ -363,5 +428,243 @@
     <script src="js/export-enhancements.js"></script>
     <script src="js/builder-enhancements.js"></script>
     <script src="js/ux-enhancements.js"></script>
+    <script>
+        // Mobile App-like Experience
+        (function() {
+            const mobileSeePreviewBtn = document.getElementById('mobileSeePreviewBtn');
+            const mobileBackToFormBtn = document.getElementById('mobileBackToFormBtn');
+            const mobilePreviewControls = document.getElementById('mobilePreviewControls');
+            const formSection = document.getElementById('cv-section');
+            const previewSection = document.querySelector('.preview-section');
+            
+            // Mobile control selectors
+            const mobileColorSelect = document.getElementById('mobile-color-select');
+            const mobileTemplateSelect = document.getElementById('mobile-template-select');
+            const mobileFontSelect = document.getElementById('mobile-font-select');
+            const mobileDownloadBtn = document.getElementById('mobile-download-btn');
+            
+            // Desktop control selectors (to sync with)
+            const desktopColorSelect = document.getElementById('color-select');
+            const desktopTemplateSelect = document.getElementById('template-select');
+            const desktopFontSelect = document.getElementById('font-select');
+            const desktopDownloadBtn = document.getElementById('download-btn');
+
+            // Check if mobile view
+            function isMobileView() {
+                return window.innerWidth <= 1024;
+            }
+
+            // Check if form has content
+            function hasFormContent() {
+                const formInputs = formSection.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
+                for (const input of formInputs) {
+                    if (input.value && input.value.trim() !== '') {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // Show/hide See Preview button based on form content
+            function updateSeePreviewButton() {
+                if (!isMobileView()) {
+                    if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                    return;
+                }
+
+                if (previewSection.classList.contains('mobile-active')) {
+                    if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                } else if (hasFormContent()) {
+                    if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.add('show');
+                } else {
+                    if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                }
+            }
+
+            // Switch to preview view
+            function showPreview() {
+                formSection.classList.add('mobile-hidden');
+                previewSection.classList.add('mobile-active');
+                if (mobilePreviewControls) mobilePreviewControls.classList.add('active');
+                if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                
+                // Update preview
+                if (window.previewManager) {
+                    window.previewManager.updatePreview();
+                }
+                
+                // Scroll to preview section smoothly after DOM updates
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        // Since preview is now visible and form is hidden, scroll to preview
+                        if (previewSection) {
+                            const navbar = document.querySelector('.preview-navbar');
+                            const navbarHeight = navbar ? navbar.offsetHeight : 56;
+                            const controlsHeight = mobilePreviewControls && mobilePreviewControls.classList.contains('active') 
+                                ? mobilePreviewControls.offsetHeight : 0;
+                            
+                            // Get preview section position
+                            const previewRect = previewSection.getBoundingClientRect();
+                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                            const previewTop = previewRect.top + scrollTop - navbarHeight - controlsHeight;
+                            
+                            window.scrollTo({ top: Math.max(0, previewTop), behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // Switch back to form view
+            function showForm() {
+                formSection.classList.remove('mobile-hidden');
+                previewSection.classList.remove('mobile-active');
+                if (mobilePreviewControls) mobilePreviewControls.classList.remove('active');
+                updateSeePreviewButton();
+                
+                // Scroll to top of form section smoothly after DOM updates
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        // Form section is at the top (after navbar)
+                        const navbar = document.querySelector('.preview-navbar');
+                        const navbarHeight = navbar ? navbar.offsetHeight : 56;
+                        
+                        if (formSection) {
+                            const formRect = formSection.getBoundingClientRect();
+                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                            const formTop = formRect.top + scrollTop - navbarHeight;
+                            window.scrollTo({ top: Math.max(0, formTop), behavior: 'smooth' });
+                        } else {
+                            // Fallback: scroll to very top
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // Sync mobile controls with desktop controls
+            function syncControls() {
+                if (mobileColorSelect && desktopColorSelect) {
+                    mobileColorSelect.value = desktopColorSelect.value;
+                    mobileColorSelect.addEventListener('change', function() {
+                        desktopColorSelect.value = this.value;
+                        desktopColorSelect.dispatchEvent(new Event('change'));
+                    });
+                }
+
+                if (mobileTemplateSelect && desktopTemplateSelect) {
+                    mobileTemplateSelect.value = desktopTemplateSelect.value;
+                    mobileTemplateSelect.addEventListener('change', function() {
+                        desktopTemplateSelect.value = this.value;
+                        desktopTemplateSelect.dispatchEvent(new Event('change'));
+                    });
+                }
+
+                if (mobileFontSelect && desktopFontSelect) {
+                    mobileFontSelect.value = desktopFontSelect.value;
+                    mobileFontSelect.addEventListener('change', function() {
+                        desktopFontSelect.value = this.value;
+                        desktopFontSelect.dispatchEvent(new Event('change'));
+                    });
+                }
+
+                // Sync desktop changes to mobile
+                if (desktopColorSelect) {
+                    desktopColorSelect.addEventListener('change', function() {
+                        if (mobileColorSelect) mobileColorSelect.value = this.value;
+                    });
+                }
+
+                if (desktopTemplateSelect) {
+                    desktopTemplateSelect.addEventListener('change', function() {
+                        if (mobileTemplateSelect) mobileTemplateSelect.value = this.value;
+                    });
+                }
+
+                if (desktopFontSelect) {
+                    desktopFontSelect.addEventListener('change', function() {
+                        if (mobileFontSelect) mobileFontSelect.value = this.value;
+                    });
+                }
+
+                // Download button
+                if (mobileDownloadBtn && desktopDownloadBtn) {
+                    mobileDownloadBtn.addEventListener('click', function() {
+                        desktopDownloadBtn.click();
+                    });
+                }
+            }
+
+            // Setup event listeners
+            if (mobileSeePreviewBtn) {
+                mobileSeePreviewBtn.addEventListener('click', showPreview);
+            }
+
+            if (mobileBackToFormBtn) {
+                mobileBackToFormBtn.addEventListener('click', showForm);
+            }
+
+            // Monitor form inputs for changes
+            function setupFormMonitoring() {
+                const formContainer = document.getElementById('cv-section');
+                if (formContainer) {
+                    formContainer.addEventListener('input', function() {
+                        updateSeePreviewButton();
+                    });
+                    
+                    // Also check on initial load and after any dynamic additions
+                    setTimeout(updateSeePreviewButton, 500);
+                }
+            }
+
+            // Handle window resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (!isMobileView()) {
+                        // Desktop view - show both sections
+                        formSection.classList.remove('mobile-hidden');
+                        previewSection.classList.add('mobile-active');
+                        if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                        if (mobilePreviewControls) mobilePreviewControls.classList.remove('active');
+                    } else {
+                        // Mobile view - update button visibility
+                        updateSeePreviewButton();
+                        if (!previewSection.classList.contains('mobile-active')) {
+                            showForm();
+                        }
+                    }
+                }, 250);
+            });
+
+            // Initialize
+            function initialize() {
+                if (isMobileView()) {
+                    // Mobile: Show form first
+                    showForm();
+                } else {
+                    // Desktop: Show both sections
+                    formSection.classList.remove('mobile-hidden');
+                    previewSection.classList.add('mobile-active');
+                    if (mobileSeePreviewBtn) mobileSeePreviewBtn.classList.remove('show');
+                }
+                
+                syncControls();
+                setupFormMonitoring();
+                
+                // Initial check
+                setTimeout(updateSeePreviewButton, 1000);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initialize);
+            } else {
+                initialize();
+            }
+
+            // Re-check button visibility periodically (in case form is populated programmatically)
+            setInterval(updateSeePreviewButton, 2000);
+        })();
+    </script>
 </body>
 </html>

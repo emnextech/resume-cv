@@ -99,16 +99,13 @@ class BuilderEnhancements {
         if (!utilityControls) {
             utilityControls = document.createElement('div');
             utilityControls.className = 'utility-controls';
-            // Insert after navbar-left to place on left side
-            const navbarLeft = navbar.querySelector('.navbar-left');
-            if (navbarLeft) {
-                navbarLeft.appendChild(utilityControls);
+            // Place on right side next to download button
+            const navbarDownload = navbar.querySelector('.navbar-download');
+            if (navbarDownload) {
+                navbar.insertBefore(utilityControls, navbarDownload);
             } else {
-                // If navbar-left doesn't exist, create it
-                const newNavbarLeft = document.createElement('div');
-                newNavbarLeft.className = 'navbar-left';
-                newNavbarLeft.appendChild(utilityControls);
-                navbar.insertBefore(newNavbarLeft, navbar.firstChild);
+                // If download section doesn't exist, append to navbar
+                navbar.appendChild(utilityControls);
             }
         }
 
@@ -202,12 +199,13 @@ class BuilderEnhancements {
             localStorage.setItem(this.storageKey, JSON.stringify(draftData));
             this.lastSaveTime = Date.now();
             
+            // Only show indicator and notification when user manually clicks save button
             if (showNotification) {
                 this.showNotification('Draft saved successfully!', 'success');
+                // Show check mark when user manually saves
+                this.updateAutosaveIndicator(true);
             }
-
-            // Update autosave indicator
-            this.updateAutosaveIndicator(true);
+            // Autosave happens silently in background - no indicator
         } catch (e) {
             console.error('Failed to save draft:', e);
             if (showNotification) {
@@ -683,11 +681,10 @@ class BuilderEnhancements {
 
     scheduleAutosave() {
         clearTimeout(this.saveTimeout);
-        this.updateAutosaveIndicator(false, 'saving');
+        // Don't show saving indicator for autosave - save silently in background
         
         this.saveTimeout = setTimeout(() => {
-            this.saveDraft(false);
-            this.updateAutosaveIndicator(true);
+            this.saveDraft(false); // Silent save, no indicator update
         }, this.autosaveDelay);
     }
 
@@ -702,18 +699,21 @@ class BuilderEnhancements {
             this.saveDraftBtn.appendChild(indicator);
         }
 
+        // Only show check mark when user manually clicks save button
         if (status === 'saving') {
-            indicator.textContent = ' (Saving...)';
-            indicator.className = 'autosave-indicator saving';
+            // Don't show "Saving..." text - save silently
+            indicator.textContent = '';
+            indicator.className = 'autosave-indicator';
         } else if (saved) {
-            indicator.textContent = ' (Saved)';
+            // Show check mark only (no text)
+            indicator.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             indicator.className = 'autosave-indicator saved';
             setTimeout(() => {
-                indicator.textContent = '';
+                indicator.innerHTML = '';
                 indicator.className = 'autosave-indicator';
             }, 2000);
         } else {
-            indicator.textContent = '';
+            indicator.innerHTML = '';
             indicator.className = 'autosave-indicator';
         }
     }
