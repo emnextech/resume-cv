@@ -180,6 +180,11 @@ class ResumeFormManager {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'entry-item';
 
+        // Generate unique index for this entry
+        const entryIndex = container.children.length;
+        const timestamp = Date.now();
+        const uniqueId = `resume-${fieldType}-${entryIndex}-${timestamp}`;
+
         let fields = [];
         if (fieldType === 'education') {
             // Education is now handled as a table, not entry-item
@@ -205,8 +210,13 @@ class ResumeFormManager {
         }
 
         fields.forEach(f => {
+            const fieldId = `${uniqueId}-${f.field}`;
+            const fieldName = `${fieldType}[${entryIndex}][${f.field}]`;
+            
             if (f.type === 'textarea') {
                 const textarea = document.createElement('textarea');
+                textarea.id = fieldId;
+                textarea.name = fieldName;
                 textarea.className = 'entry-field';
                 textarea.setAttribute('data-field', f.field);
                 textarea.placeholder = f.placeholder;
@@ -215,6 +225,8 @@ class ResumeFormManager {
                 entryDiv.appendChild(textarea);
             } else {
                 const input = document.createElement('input');
+                input.id = fieldId;
+                input.name = fieldName;
                 input.type = f.type || 'text';
                 input.className = 'entry-field';
                 input.setAttribute('data-field', f.field);
@@ -251,9 +263,16 @@ class ResumeFormManager {
 
         const row = document.createElement('tr');
         
+        // Generate unique index for this row
+        const rowIndex = container.children.length;
+        const timestamp = Date.now();
+        const uniqueId = `resume-education-${rowIndex}-${timestamp}`;
+        
         // Year field
         const yearCell = document.createElement('td');
         const yearInput = document.createElement('input');
+        yearInput.id = `${uniqueId}-year`;
+        yearInput.name = `education[${rowIndex}][year]`;
         yearInput.type = 'text';
         yearInput.setAttribute('data-field', 'year');
         yearInput.placeholder = 'e.g., 2015-2017';
@@ -264,6 +283,8 @@ class ResumeFormManager {
         // Level field
         const levelCell = document.createElement('td');
         const levelInput = document.createElement('input');
+        levelInput.id = `${uniqueId}-level`;
+        levelInput.name = `education[${rowIndex}][level]`;
         levelInput.type = 'text';
         levelInput.setAttribute('data-field', 'level');
         levelInput.placeholder = 'e.g., Grade 12, Tertiary, Bachelor';
@@ -274,6 +295,8 @@ class ResumeFormManager {
         // School field
         const schoolCell = document.createElement('td');
         const schoolInput = document.createElement('input');
+        schoolInput.id = `${uniqueId}-school`;
+        schoolInput.name = `education[${rowIndex}][school]`;
         schoolInput.type = 'text';
         schoolInput.setAttribute('data-field', 'school');
         schoolInput.placeholder = 'e.g., Rockview University';
@@ -284,6 +307,8 @@ class ResumeFormManager {
         // Qualification field
         const qualificationCell = document.createElement('td');
         const qualificationInput = document.createElement('input');
+        qualificationInput.id = `${uniqueId}-qualification`;
+        qualificationInput.name = `education[${rowIndex}][qualification]`;
         qualificationInput.type = 'text';
         qualificationInput.setAttribute('data-field', 'qualification');
         qualificationInput.placeholder = 'e.g., Certificate, Diploma';

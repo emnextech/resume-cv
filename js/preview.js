@@ -152,6 +152,55 @@ class PreviewManager {
         return filtered;
     }
 
+    // Check if CV has minimal content (sparse CV)
+    isSparseCV(data) {
+        let sectionCount = 0;
+        let hasSubstantialContent = false;
+
+        // Count sections with content
+        if (data.summary && data.summary.trim()) sectionCount++;
+        if (data.education && data.education.length > 0) {
+            sectionCount++;
+            hasSubstantialContent = true;
+        }
+        if (data.work && data.work.length > 0) {
+            sectionCount++;
+            hasSubstantialContent = true;
+        }
+        if (data.research && data.research.length > 0) {
+            sectionCount++;
+            hasSubstantialContent = true;
+        }
+        if (data.publications && data.publications.length > 0) {
+            sectionCount++;
+            hasSubstantialContent = true;
+        }
+        if (data.certifications && data.certifications.length > 0) {
+            sectionCount++;
+        }
+        if (data.conferences && data.conferences.length > 0) {
+            sectionCount++;
+        }
+        if (data.achievements && data.achievements.length > 0) {
+            sectionCount++;
+        }
+        if (data.projects && data.projects.length > 0) {
+            sectionCount++;
+            hasSubstantialContent = true;
+        }
+        if (data.skills && data.skills.length > 0) {
+            sectionCount++;
+        }
+        if (data.references && data.references.length > 0) {
+            sectionCount++;
+        }
+
+        // Consider CV sparse if:
+        // - Less than 3 sections total, OR
+        // - Only has basic info (name, contact) and 1-2 minor sections without substantial content
+        return sectionCount < 3 || (!hasSubstantialContent && sectionCount <= 2);
+    }
+
     updatePreview() {
         const previewContent = document.getElementById('preview-content');
         if (!previewContent) return;
@@ -159,8 +208,15 @@ class PreviewManager {
         const data = this.getCurrentData();
         const placeholderData = this.getPlaceholderData('cv');
 
+        // Check if CV is sparse
+        const isSparse = this.isSparseCV(data);
+
         // Clear and set template, color, and font classes
-        previewContent.className = `preview-content template-${this.currentTemplate} color-${this.currentColor} font-${this.currentFont}`;
+        let baseClasses = `preview-content template-${this.currentTemplate} color-${this.currentColor} font-${this.currentFont}`;
+        if (isSparse) {
+            baseClasses += ' cv-sparse';
+        }
+        previewContent.className = baseClasses;
         
         // Apply color as CSS variable
         this.applyColor(previewContent);
@@ -274,6 +330,7 @@ class PreviewManager {
             });
             
             if (validEducation.length > 0) {
+                html += '<div class="preview-section-wrapper">';
                 html += '<div class="preview-section-title">Academic Qualifications</div>';
                 html += '<table class="preview-education-table">';
                 html += '<thead><tr><th>Year</th><th>Level</th><th>School</th><th>Qualification</th></tr></thead>';
@@ -287,111 +344,141 @@ class PreviewManager {
                     html += '</tr>';
                 });
                 html += '</tbody></table>';
+                html += '</div>'; // Close preview-section-wrapper
             }
         }
 
         // Work Experience
         const work = this.getArrayValue(data.work, placeholderData.work, true);
         if (work && work.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Work Experience</div>';
-            work.forEach(w => {
+            work.forEach((w, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${this.escapeHtml(w.title || '')}</div>
                         <div class="preview-entry-subtitle">${this.escapeHtml(w.company || '')} ${w.period ? '• ' + this.escapeHtml(w.period) : ''}</div>
                         ${w.description ? `<div class="preview-entry-details">${this.formatText(w.description)}</div>` : ''}
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Research Experience
         const research = this.getArrayValue(data.research, placeholderData.research, true);
         if (research && research.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Research Experience</div>';
-            research.forEach(r => {
+            research.forEach((r, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${this.escapeHtml(r.title || '')}</div>
                         <div class="preview-entry-subtitle">${this.escapeHtml(r.institution || '')} ${r.period ? '• ' + this.escapeHtml(r.period) : ''}</div>
                         ${r.description ? `<div class="preview-entry-details">${this.formatText(r.description)}</div>` : ''}
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Publications
         const publications = this.getArrayValue(data.publications, placeholderData.publications, true);
         if (publications && publications.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Publications</div>';
-            publications.forEach(pub => {
+            publications.forEach((pub, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${this.escapeHtml(pub.title || '')}</div>
                         <div class="preview-entry-subtitle">${this.escapeHtml(pub.venue || '')} ${pub.year ? '• ' + this.escapeHtml(pub.year) : ''}</div>
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Certifications
         const certifications = this.getArrayValue(data.certifications, placeholderData.certifications, true);
         if (certifications && certifications.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Certifications</div>';
-            certifications.forEach(cert => {
+            certifications.forEach((cert, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${this.escapeHtml(cert.name || '')}</div>
                         <div class="preview-entry-subtitle">${this.escapeHtml(cert.issuer || '')} ${cert.year ? '• ' + this.escapeHtml(cert.year) : ''}</div>
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Conferences
         const conferences = this.getArrayValue(data.conferences, placeholderData.conferences, true);
         if (conferences && conferences.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Conferences / Workshops</div>';
-            conferences.forEach(conf => {
+            conferences.forEach((conf, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${this.escapeHtml(conf.name || '')}</div>
                         <div class="preview-entry-subtitle">${this.escapeHtml(conf.location || '')} ${conf.year ? '• ' + this.escapeHtml(conf.year) : ''}</div>
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Achievements
         const achievements = this.getArrayValue(data.achievements, placeholderData.achievements, true);
         if (achievements && achievements.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Achievements</div>';
-            achievements.forEach(ach => {
+            achievements.forEach((ach, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-details">${this.formatText(ach.description || '')}</div>
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Projects
         const projects = this.getArrayValue(data.projects, placeholderData.projects, true);
         if (projects && projects.length > 0) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Projects</div>';
-            projects.forEach(proj => {
+            projects.forEach((proj, index) => {
+                const isFirst = index === 0;
+                const entryClass = isFirst ? 'preview-entry preview-entry-first' : 'preview-entry';
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${proj.name || ''}</div>
                         <div class="preview-entry-subtitle">${proj.tech || ''}</div>
                         ${proj.description ? `<div class="preview-entry-details">${this.formatText(proj.description)}</div>` : ''}
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper
         }
 
         // Skills
         if (skills && (Array.isArray(skills) ? skills.length > 0 : skills.trim())) {
+            html += '<div class="preview-section-wrapper">';
             html += '<div class="preview-section-title">Skills</div>';
             // Handle both array and string formats for backward compatibility
             const skillsArray = Array.isArray(skills) 
@@ -399,7 +486,7 @@ class PreviewManager {
                 : skills.split(/[,\n]/).map(s => s.trim()).filter(s => s);
             
             if (skillsArray.length > 0) {
-                html += '<div class="preview-skills-horizontal">';
+                html += '<div class="preview-skills-horizontal preview-section-content-first">';
                 skillsArray.forEach((skill, index) => {
                     html += `<span class="preview-skill-item">${this.escapeHtml(skill)}</span>`;
                     if (index < skillsArray.length - 1) {
@@ -408,13 +495,15 @@ class PreviewManager {
                 });
                 html += '</div>';
             }
+            html += '</div>'; // Close preview-section-wrapper
         }
 
-        // References
+        // References - wrap in container for better page break control
         const references = this.getArrayValue(data.references, placeholderData.references, true);
         if (references && references.length > 0) {
+            html += '<div class="preview-section-wrapper preview-references-section">';
             html += '<div class="preview-section-title">References</div>';
-            references.forEach(ref => {
+            references.forEach((ref, index) => {
                 const name = this.escapeHtml(ref.name || '');
                 const position = this.escapeHtml(ref.position || '');
                 const phone = this.escapeHtml(ref.phone || '');
@@ -429,14 +518,22 @@ class PreviewManager {
                     contactInfo = email;
                 }
                 
+                // Add classes for special handling
+                const isFirst = index === 0;
+                const isLast = index === references.length - 1;
+                let entryClass = 'preview-entry';
+                if (isFirst) entryClass += ' preview-entry-first';
+                if (isLast) entryClass += ' preview-entry-last';
+                
                 html += `
-                    <div class="preview-entry">
+                    <div class="${entryClass}">
                         <div class="preview-entry-title">${name}</div>
                         ${position ? `<div class="preview-entry-subtitle">${position}</div>` : ''}
                         ${contactInfo ? `<div class="preview-entry-details">${contactInfo}</div>` : ''}
                     </div>
                 `;
             });
+            html += '</div>'; // Close preview-section-wrapper and preview-references-section
         }
 
         return html;

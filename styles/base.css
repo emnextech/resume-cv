@@ -506,28 +506,52 @@ textarea {
         min-width: 100%;
         max-width: 100%;
     }
+
+    /* Extra small screens - optimize further */
+    .form-container {
+        padding: var(--spacing-md, 16px) var(--spacing-sm, 12px);
+    }
+
+    .form-group {
+        margin-bottom: var(--spacing-md, 16px);
+        padding-bottom: var(--spacing-md, 16px);
+    }
+
+    .form-group h3 {
+        font-size: 1.0625rem; /* 17px */
+        margin-bottom: var(--spacing-sm, 12px);
+    }
 }
 
 /* Mobile App-like Styling */
 @media (max-width: 1024px) {
     body {
         -webkit-tap-highlight-color: transparent;
+        font-size: 16px; /* Prevent zoom on iOS input focus */
     }
 
     .form-container {
-        padding: var(--spacing-lg, 24px) var(--spacing-md, 16px);
+        padding: var(--spacing-md, 16px);
     }
 
     .form-group {
-        margin-bottom: var(--spacing-xl, 32px);
-        padding-bottom: var(--spacing-lg, 24px);
+        margin-bottom: var(--spacing-lg, 24px);
+        padding-bottom: var(--spacing-md, 16px);
     }
 
     .form-group h3 {
-        font-size: var(--font-size-xl, 1.25rem);
+        font-size: 1.125rem; /* 18px */
         margin-bottom: var(--spacing-md, 16px);
         color: var(--text-primary, #0F172A);
         font-weight: var(--font-weight-bold, 700);
+        line-height: 1.4;
+    }
+
+    .form-label {
+        font-size: 0.9375rem; /* 15px */
+        margin-bottom: var(--spacing-xs, 4px);
+        font-weight: var(--font-weight-medium, 500);
+        color: var(--text-primary, #0F172A);
     }
 
     input[type="text"],
@@ -535,11 +559,20 @@ textarea {
     input[type="tel"],
     input[type="url"],
     textarea {
-        padding: var(--spacing-md, 16px);
-        font-size: var(--font-size-base, 1rem);
+        padding: 14px 16px;
+        font-size: 16px; /* Prevent zoom on iOS */
         border-radius: 8px;
-        border: 1px solid var(--border-medium, #CBD5E1);
+        border: 1.5px solid var(--border-medium, #CBD5E1);
         margin-bottom: var(--spacing-md, 16px);
+        line-height: 1.5;
+        min-height: 48px; /* Better touch target */
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    textarea {
+        min-height: 100px;
+        line-height: 1.6;
     }
 
     input[type="text"]:focus,
@@ -549,20 +582,203 @@ textarea {
     textarea:focus {
         border-color: var(--optimism-blue, #1a7fa3);
         box-shadow: 0 0 0 3px rgba(26, 127, 163, 0.1);
+        outline: none;
     }
 
     .add-btn {
-        padding: var(--spacing-md, 16px) var(--spacing-xl, 32px);
-        font-size: var(--font-size-base, 1rem);
+        padding: 14px 20px;
+        font-size: 1rem; /* 16px */
         border-radius: 8px;
         min-height: 48px;
         width: 100%;
+        font-weight: var(--font-weight-semibold, 600);
     }
 
     .entry-item {
-        padding: var(--spacing-lg, 24px);
+        padding: var(--spacing-md, 16px);
         border-radius: 8px;
         margin-bottom: var(--spacing-md, 16px);
+        border-left-width: 3px;
+    }
+
+    .entry-field {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 14px 16px;
+        min-height: 48px;
+        line-height: 1.5;
+    }
+
+    /* Reduce dropdown arrow size for mobile */
+    .country-select-arrow {
+        font-size: 0.625rem !important; /* 10px - smaller arrow */
+        right: 14px !important;
+    }
+
+    .country-select-input input {
+        padding-right: 32px !important; /* Adjust for smaller arrow */
+        font-size: 16px !important; /* Prevent zoom */
+        padding-top: 14px;
+        padding-bottom: 14px;
+        min-height: 48px;
+    }
+
+    /* Form selects - improve mobile styling */
+    .form-select {
+        font-size: 16px !important; /* Prevent zoom on iOS */
+        padding: 14px 16px;
+        padding-right: 40px;
+        min-height: 48px;
+        border: 1.5px solid var(--border-medium, #CBD5E1);
+        border-radius: 8px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 10px 6px;
+    }
+
+    .address-city-input,
+    .address-street-input {
+        font-size: 16px !important;
+        padding: 14px 16px;
+        min-height: 48px;
+        border: 1.5px solid var(--border-medium, #CBD5E1);
+        line-height: 1.5;
+    }
+
+    .phone-input-group .phone-number-input {
+        font-size: 16px !important;
+        padding: 14px 16px;
+        min-height: 48px;
+        border: 1.5px solid var(--border-medium, #CBD5E1);
+    }
+
+    /* Education table - better mobile spacing */
+    .education-table th,
+    .education-table td {
+        padding: 12px 8px;
+        font-size: 0.9375rem; /* 15px */
+    }
+
+    .education-table th {
+        font-size: 0.875rem; /* 14px */
+        font-weight: var(--font-weight-semibold, 600);
+    }
+
+    .education-table td input {
+        font-size: 16px !important; /* Prevent zoom */
+        padding: 10px 12px;
+        min-height: 44px;
+        border-radius: 6px;
+    }
+
+    .education-table .table-remove-btn {
+        font-size: 0.875rem; /* 14px */
+        padding: 8px 12px;
+        min-height: 40px;
+    }
+
+    /* Skills section */
+    .skills-checkboxes {
+        gap: var(--spacing-sm, 8px);
+    }
+
+    .skill-checkbox-label {
+        padding: 10px 12px;
+        font-size: 0.9375rem; /* 15px */
+    }
+
+    .skills-manual-input {
+        font-size: 16px !important;
+        padding: 14px 16px;
+        min-height: 48px;
+    }
+
+    .form-instruction {
+        font-size: 0.875rem; /* 14px */
+        line-height: 1.6;
+        margin-bottom: var(--spacing-md, 16px);
+    }
+
+    .form-hint {
+        font-size: 0.8125rem; /* 13px */
+    }
+
+    /* Clear All button styling */
+    .clear-all-btn {
+        font-size: 0.875rem; /* 14px */
+        padding: 10px 16px;
+        min-height: 44px;
+        margin-top: var(--spacing-sm, 8px);
+    }
+
+    /* Better spacing for phone input on mobile */
+    .phone-input-group {
+        margin-bottom: var(--spacing-md, 16px);
+    }
+
+    .address-input-group {
+        margin-bottom: var(--spacing-md, 16px);
+    }
+
+    /* Skills section mobile improvements */
+    .skills-checkbox-container {
+        margin-top: var(--spacing-md, 16px);
+    }
+
+    .skill-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--optimism-blue, #1a7fa3);
+    }
+
+    /* Industry select dropdown - mobile improvements */
+    #cv-industry-select {
+        font-size: 16px !important;
+        padding: 14px 16px;
+        padding-right: 40px;
+        min-height: 48px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 10px 6px;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .form-container {
+        padding: var(--spacing-md, 16px) var(--spacing-sm, 12px);
+    }
+
+    .form-group {
+        margin-bottom: var(--spacing-md, 16px);
+    }
+
+    .form-group h3 {
+        font-size: 1rem; /* 16px */
+        margin-bottom: var(--spacing-sm, 12px);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    textarea {
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+    .add-btn {
+        padding: 12px 18px;
+        font-size: 0.9375rem; /* 15px */
+    }
+
+    .entry-item {
+        padding: var(--spacing-sm, 12px);
     }
 }
 
@@ -730,19 +946,28 @@ textarea {
 }
 
 
-.remove-btn {
-    background: var(--optimism-blue, #1a7fa3);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-}
+    .remove-btn {
+        background: var(--optimism-blue, #1a7fa3);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem; /* 14px */
+        margin-top: var(--spacing-sm, 8px);
+        font-weight: var(--font-weight-semibold, 600);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        min-height: 44px; /* Better touch target on mobile */
+    }
+
+    /* Mobile-specific button improvements */
+    @media (max-width: 1024px) {
+        .remove-btn {
+            width: 100%;
+            margin-top: var(--spacing-md, 12px);
+        }
+    }
 
 .remove-btn:hover {
     background: var(--optimism-blue-dark, #0f5f7a);

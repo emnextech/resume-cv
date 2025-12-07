@@ -29,26 +29,9 @@ class DOCXExporter {
             // Get current template, color, and font settings
             const settings = this.getPreviewSettings(previewContent);
 
-            // Try htmlDocx first
-            if (typeof htmlDocx !== 'undefined' && htmlDocx.asBlob) {
-                const clonedContent = previewContent.cloneNode(true);
-                this.addInlineStyles(clonedContent, paperSize, settings);
-                const htmlString = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' + clonedContent.outerHTML + '</body></html>';
-                
-                try {
-                    const converted = htmlDocx.asBlob(htmlString);
-                    if (typeof saveAs !== 'undefined') {
-                        saveAs(converted, finalFileName);
-                    } else {
-                        this.downloadBlob(converted, finalFileName);
-                    }
-                    return;
-                } catch (e) {
-                    console.warn('htmlDocx conversion failed, using fallback:', e);
-                }
-            }
-
-            // Fallback: Create a simple HTML file that can be opened in Word
+            // Use the reliable fallback method that creates an HTML file Word can open directly
+            // This method doesn't require external libraries and avoids CORS/CORB issues
+            // Word will automatically recognize and format the HTML file when opened
             this.createSimpleDOCX(previewContent, finalFileName, paperSize, settings);
         } catch (error) {
             console.error('DOCX Export Error:', error);
@@ -258,6 +241,56 @@ class DOCXExporter {
         }
         .preview-education-table tbody tr:nth-child(even), table tbody tr:nth-child(even) { 
             background: #F8FAFC; 
+        }
+        /* Section wrappers - prevent headings from being orphaned */
+        .preview-section-wrapper {
+            page-break-inside: avoid;
+        }
+        .preview-section-title {
+            page-break-after: avoid;
+        }
+        /* First content after heading - ensure at least 4 lines stay with heading */
+        .preview-entry-first,
+        .preview-section-content-first {
+            orphans: 4;
+            widows: 4;
+            page-break-before: avoid;
+        }
+        /* Education table - keep with section title */
+        .preview-section-wrapper .preview-education-table {
+            page-break-before: avoid;
+            orphans: 4;
+            widows: 4;
+        }
+        /* Page break controls for references - prevent orphaned lines */
+        .preview-references-section {
+            page-break-inside: avoid;
+        }
+        .preview-references-section .preview-section-title {
+            page-break-after: avoid;
+        }
+        .preview-entry {
+            page-break-inside: avoid;
+            orphans: 2;
+            widows: 2;
+        }
+        .preview-entry-last {
+            orphans: 3;
+            widows: 3;
+        }
+        /* Keep last 2 references together */
+        .preview-references-section .preview-entry:nth-last-child(-n+2) {
+            page-break-inside: avoid;
+        }
+        /* Sparse CV adjustments */
+        .cv-sparse {
+            padding-bottom: 120pt;
+        }
+        .cv-sparse .preview-entry {
+            margin-bottom: 20pt;
+        }
+        .cv-sparse .preview-section-title {
+            margin-top: 30pt;
         }
     </style>
 </head>

@@ -313,6 +313,24 @@
     text-decoration: none;
 }
 
+.navbar-brand-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-brand-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    max-width: 300px;
+}
+
+.navbar-brand-link:hover .navbar-brand-logo {
+    opacity: 0.8;
+}
+
 /* Middle: controls */
 .navbar-controls {
     display: flex;
@@ -400,6 +418,15 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Desktop: Show "Download", Mobile: Show "Download CV" */
+.download-btn .download-text {
+    display: inline;
+}
+
+.download-btn .download-text-mobile {
+    display: none;
 }
 
 .download-btn:hover {
@@ -521,8 +548,7 @@
 
     /* Hide all controls on mobile - app-like experience */
     .navbar-controls,
-    .mobile-menu-toggle-builder,
-    .navbar-download {
+    .mobile-menu-toggle-builder {
         display: none !important;
     }
 
@@ -530,9 +556,29 @@
         display: none; /* Hide website name on mobile */
     }
 
+    .navbar-brand-logo {
+        height: 50px;
+        max-width: 200px;
+    }
+
     /* Hide utility controls (save/help) on mobile navbar - they're in preview controls */
     .utility-controls {
         display: none !important;
+    }
+
+    /* Show download button on mobile navbar - top right */
+    .navbar-download {
+        display: flex !important;
+        order: 3;
+        margin-left: auto;
+    }
+
+    .download-btn .download-text {
+        display: none; /* Hide desktop text */
+    }
+
+    .download-btn .download-text-mobile {
+        display: inline; /* Show mobile text */
     }
 
     .preview-navbar {
@@ -540,15 +586,23 @@
         position: sticky;
         top: 0;
         z-index: 100;
-        justify-content: flex-start;
+        justify-content: space-between;
         padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
         min-height: 56px;
     }
 
     .navbar-left {
-        width: 100%;
+        flex: 1;
         justify-content: flex-start;
         gap: var(--spacing-md, 16px);
+    }
+
+    /* Mobile download button styling */
+    .download-btn {
+        padding: 8px 14px !important;
+        font-size: 0.875rem !important; /* 14px */
+        min-height: 40px !important;
+        white-space: nowrap;
     }
 
     .back-button-navbar {
@@ -595,7 +649,7 @@
     }
 
     .form-container {
-        padding: var(--spacing-md, 16px);
+        padding: var(--spacing-md, 16px) var(--spacing-sm, 12px);
     }
 
     .preview-container {
@@ -620,13 +674,28 @@
 
     .mobile-preview-controls select {
         min-width: 80px;
-        font-size: var(--font-size-xs, 0.75rem);
-        padding: var(--spacing-xs, 4px) var(--spacing-xs, 8px);
+        font-size: 0.875rem; /* 14px - readable on mobile */
+        padding: 8px 12px;
+        padding-right: 32px;
+        min-height: 40px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='8' height='5' viewBox='0 0 8 5' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L4 4L7 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 8px 5px;
     }
 
     .mobile-preview-controls .mobile-back-to-form-btn {
-        padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
-        font-size: var(--font-size-xs, 0.75rem);
+        padding: 8px 12px;
+        font-size: 0.875rem; /* 14px */
+        min-height: 40px;
+    }
+
+    .mobile-preview-controls .mobile-download-btn {
+        padding: 8px 12px;
+        font-size: 0.875rem; /* 14px */
+        min-height: 40px;
     }
 
     .mobile-preview-controls .mobile-control-group:last-child {
@@ -653,7 +722,7 @@
     }
     
     .form-container {
-        padding: var(--spacing-md, 16px);
+        padding: var(--spacing-md, 16px) var(--spacing-sm, 12px);
     }
     
     .preview-section {
@@ -663,21 +732,35 @@
     .education-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin-left: -12px;
+        margin-right: -12px;
+        padding: 0 12px;
     }
 
     .education-table {
-        font-size: var(--font-size-xs, 0.75rem);
+        font-size: 0.875rem; /* 14px - readable on small screens */
         min-width: 600px; /* Prevent table from breaking */
     }
 
-    .education-table th,
-    .education-table td {
-        padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+    .education-table th {
+        font-size: 0.8125rem; /* 13px */
+        padding: 10px 6px;
     }
 
-    .education-table th {
-        font-size: var(--font-size-xs, 0.75rem);
+    .education-table td {
+        padding: 10px 6px;
     }
-    
+
+    .education-table td input {
+        font-size: 16px !important; /* Prevent zoom */
+        padding: 8px 10px;
+        min-height: 42px;
+    }
+
+    .education-table .table-remove-btn {
+        font-size: 0.8125rem; /* 13px */
+        padding: 6px 10px;
+        min-height: 38px;
+    }
 }
 

@@ -3,7 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareerCraft - CV Builder</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>CareerCraft - CV Builder | Create Your Professional CV</title>
+    <meta name="title" content="CareerCraft - CV Builder | Create Your Professional CV">
+    <meta name="description" content="Build your professional CV with CareerCraft. Choose from multiple templates, customize colors and fonts, and export as Word document. Free and easy to use.">
+    <meta name="keywords" content="CV builder, resume builder, CV maker, professional CV, ATS friendly, free CV builder, Word export, CV templates">
+    <meta name="author" content="CareerCraft">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://careercraft.com/cvbuilder">
+    <meta property="og:title" content="CareerCraft - CV Builder | Create Your Professional CV">
+    <meta property="og:description" content="Build your professional CV with CareerCraft. Choose from multiple templates, customize colors and fonts, and export as Word document.">
+    <meta property="og:image" content="assets/images/careercraft.png">
+    <meta property="og:site_name" content="CareerCraft">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://careercraft.com/cvbuilder">
+    <meta property="twitter:title" content="CareerCraft - CV Builder | Create Your Professional CV">
+    <meta property="twitter:description" content="Build your professional CV with CareerCraft. Choose from multiple templates, customize colors and fonts, and export as Word document.">
+    <meta property="twitter:image" content="assets/images/careercraft.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+    <link rel="shortcut icon" href="assets/images/icon.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#1a7fa3">
+    <meta name="msapplication-TileColor" content="#1a7fa3">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="application-name" content="CareerCraft">
+    <meta name="apple-mobile-web-app-title" content="CareerCraft">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    
     <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/layout.css">
     <link rel="stylesheet" href="styles/tabs.css">
@@ -12,7 +51,7 @@
     <link rel="stylesheet" href="styles/export-enhancements.css">
     <link rel="stylesheet" href="styles/ux-enhancements.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+    <!-- html-docx-js removed due to CORS/404 issues - using reliable fallback method instead -->
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -34,7 +73,7 @@
                     <span></span>
                     <span></span>
                 </button>
-                <a href="index.html" class="back-button-navbar" title="Back to Home">
+                <a href="/" class="back-button-navbar" title="Back to Home">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -77,7 +116,8 @@
             </div>
             <div class="navbar-download">
                 <button id="download-btn" class="download-btn">
-                    <span>Download</span>
+                    <span class="download-text">Download</span>
+                    <span class="download-text-mobile">Download CV</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
@@ -107,7 +147,7 @@
                         <input type="text" id="cv-name" placeholder="e.g., John Banda" data-field="name">
                         <input type="email" id="cv-email" placeholder="e.g., john.banda@email.com" data-field="email">
                         <div class="phone-input-group">
-                            <label for="cv-country-code" class="form-label">Phone Number</label>
+                            <label for="cv-phone-number" class="form-label">Phone Number</label>
                             <div class="phone-input-wrapper">
                             <div class="country-select-wrapper">
                                 <div class="country-select-input" id="cv-country-code-display">
@@ -128,7 +168,7 @@
                         
                         <!-- Address Section -->
                         <div class="address-input-group">
-                            <label for="cv-address-country" class="form-label">Address</label>
+                            <label for="cv-address-country-search" class="form-label">Address</label>
                             
                             <!-- Country Selection -->
                             <div class="country-select-wrapper">
@@ -391,14 +431,14 @@
             </div>
             <div class="quality-modal-body">
                 <div class="quality-option-group">
-                    <label>Quality:</label>
+                    <label for="quality-select">Quality:</label>
                     <select id="quality-select" class="quality-select">
                         <option value="standard">Standard (Recommended)</option>
                         <option value="high">High Quality</option>
                     </select>
                 </div>
                 <div class="quality-option-group">
-                    <label>Paper Size:</label>
+                    <label for="paper-size-select">Paper Size:</label>
                     <select id="paper-size-select" class="quality-select">
                         <option value="a4">A4</option>
                         <option value="letter">Letter</option>

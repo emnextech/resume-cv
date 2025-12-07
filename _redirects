@@ -1,0 +1,9 @@
+# Netlify/Vercel Redirects for Clean URLs
+
+# Redirect old URLs to clean URLs
+/index.html    /    301
+/mainBuilder.html    /cvbuilder    301
+
+# Rewrite clean URLs to actual files
+/    /index.html    200
+/cvbuilder    /mainBuilder.html    200

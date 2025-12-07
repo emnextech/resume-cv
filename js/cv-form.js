@@ -667,11 +667,19 @@ class CVFormManager {
         const industrySkills = this.getIndustrySkills()[industry] || [];
         checkboxesContainer.innerHTML = '';
 
-        industrySkills.forEach(skill => {
+        industrySkills.forEach((skill, index) => {
             const label = document.createElement('label');
             label.className = 'skill-checkbox-label';
             
+            // Generate unique ID for checkbox
+            const checkboxId = `cv-skill-${index}-${skill.toLowerCase().replace(/\s+/g, '-')}`;
+            
+            // Set for attribute on label to associate with checkbox
+            label.setAttribute('for', checkboxId);
+            
             const checkbox = document.createElement('input');
+            checkbox.id = checkboxId;
+            checkbox.name = `skills[]`;
             checkbox.type = 'checkbox';
             checkbox.value = skill;
             checkbox.className = 'skill-checkbox';
@@ -990,6 +998,11 @@ class CVFormManager {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'entry-item';
 
+        // Generate unique index for this entry
+        const entryIndex = container.children.length;
+        const timestamp = Date.now();
+        const uniqueId = `${fieldType}-${entryIndex}-${timestamp}`;
+
         let fields = [];
         if (fieldType === 'education') {
             // Education is now handled as a table, not entry-item
@@ -1046,8 +1059,13 @@ class CVFormManager {
         }
 
         fields.forEach(f => {
+            const fieldId = `cv-${uniqueId}-${f.field}`;
+            const fieldName = `${fieldType}[${entryIndex}][${f.field}]`;
+            
             if (f.type === 'textarea') {
                 const textarea = document.createElement('textarea');
+                textarea.id = fieldId;
+                textarea.name = fieldName;
                 textarea.className = 'entry-field';
                 textarea.setAttribute('data-field', f.field);
                 textarea.placeholder = f.placeholder;
@@ -1056,6 +1074,8 @@ class CVFormManager {
                 entryDiv.appendChild(textarea);
             } else {
                 const input = document.createElement('input');
+                input.id = fieldId;
+                input.name = fieldName;
                 input.type = f.type || 'text';
                 input.className = 'entry-field';
                 input.setAttribute('data-field', f.field);
@@ -1092,9 +1112,16 @@ class CVFormManager {
 
         const row = document.createElement('tr');
         
+        // Generate unique index for this row
+        const rowIndex = container.children.length;
+        const timestamp = Date.now();
+        const uniqueId = `education-${rowIndex}-${timestamp}`;
+        
         // Year field
         const yearCell = document.createElement('td');
         const yearInput = document.createElement('input');
+        yearInput.id = `cv-${uniqueId}-year`;
+        yearInput.name = `education[${rowIndex}][year]`;
         yearInput.type = 'text';
         yearInput.setAttribute('data-field', 'year');
         yearInput.placeholder = 'e.g., 2015-2017';
@@ -1105,6 +1132,8 @@ class CVFormManager {
         // Level field
         const levelCell = document.createElement('td');
         const levelInput = document.createElement('input');
+        levelInput.id = `cv-${uniqueId}-level`;
+        levelInput.name = `education[${rowIndex}][level]`;
         levelInput.type = 'text';
         levelInput.setAttribute('data-field', 'level');
         levelInput.placeholder = 'e.g., Grade 12, Tertiary, Bachelor';
@@ -1115,6 +1144,8 @@ class CVFormManager {
         // School field
         const schoolCell = document.createElement('td');
         const schoolInput = document.createElement('input');
+        schoolInput.id = `cv-${uniqueId}-school`;
+        schoolInput.name = `education[${rowIndex}][school]`;
         schoolInput.type = 'text';
         schoolInput.setAttribute('data-field', 'school');
         schoolInput.placeholder = 'e.g., Rockview University';
@@ -1125,6 +1156,8 @@ class CVFormManager {
         // Qualification field
         const qualificationCell = document.createElement('td');
         const qualificationInput = document.createElement('input');
+        qualificationInput.id = `cv-${uniqueId}-qualification`;
+        qualificationInput.name = `education[${rowIndex}][qualification]`;
         qualificationInput.type = 'text';
         qualificationInput.setAttribute('data-field', 'qualification');
         qualificationInput.placeholder = 'e.g., Certificate, Diploma';

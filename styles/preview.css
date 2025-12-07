@@ -672,18 +672,123 @@
     display: none !important; /* Removed per user request */
 }
 
+/* Sparse CV adjustments - better spacing for minimal content */
+.preview-content.cv-sparse {
+    padding-bottom: 120px; /* Extra bottom padding for sparse CVs */
+}
+
+.preview-content.cv-sparse .preview-entry {
+    margin-bottom: 20px; /* Slightly more spacing between entries */
+}
+
+.preview-content.cv-sparse .preview-section-title {
+    margin-top: 30px; /* More space before sections */
+}
+
+/* Section wrappers - keep headings with their content */
+.preview-section-wrapper {
+    position: relative;
+    /* Keep section together to prevent orphaned headings */
+    break-inside: avoid;
+}
+
+/* References section - prevent orphaned lines */
+.preview-references-section {
+    /* Container for references to control page breaks */
+    position: relative;
+}
+
+/* Keep at least 2 lines together in references */
+.preview-content .preview-entry {
+    orphans: 2;
+    widows: 2;
+}
+
+/* First entry after section title - ensure at least 3-4 lines stay with heading */
+.preview-entry-first,
+.preview-section-content-first {
+    orphans: 4;
+    widows: 4;
+    page-break-before: avoid;
+}
+
+/* Keep last 2 references together to prevent orphan */
+.preview-references-section .preview-entry:nth-last-child(-n+2) {
+    break-inside: avoid;
+}
+
 /* Print page breaks */
 @media print {
     .preview-content {
         page-break-after: auto;
+        orphans: 3;
+        widows: 3;
+    }
+    
+    /* Section wrappers - prevent headings from being orphaned */
+    .preview-section-wrapper {
+        /* Keep entire section together - if heading would be alone, move section to next page */
+        page-break-inside: avoid;
     }
     
     .preview-section-title {
+        /* Keep heading with following content */
         page-break-after: avoid;
     }
     
+    /* First content element after section title - ensure at least 4 lines stay with heading */
+    .preview-entry-first,
+    .preview-section-content-first,
+    .preview-education-table:first-of-type {
+        orphans: 4;
+        widows: 4;
+        page-break-before: avoid;
+    }
+    
+    /* Education table - keep with its section title */
+    .preview-section-wrapper .preview-education-table {
+        page-break-before: avoid;
+        orphans: 4;
+        widows: 4;
+    }
+    
+    /* Special handling for references section */
+    .preview-references-section {
+        /* Keep references section together - if it would break near end, move entire section */
+        page-break-inside: avoid;
+    }
+    
+    /* Keep references section title with first entry */
+    .preview-references-section .preview-section-title {
+        page-break-after: avoid;
+    }
+    
+    /* Keep last reference entry from being orphaned */
+    .preview-content .preview-entry-last {
+        orphans: 3;
+        widows: 3;
+    }
+    
+    /* Keep reference entries together */
     .preview-entry {
         page-break-inside: avoid;
+        orphans: 2;
+        widows: 2;
+    }
+    
+    /* Keep last 2 reference entries together to prevent orphan */
+    .preview-references-section .preview-entry:nth-last-child(-n+2) {
+        page-break-inside: avoid;
+    }
+    
+    /* If only one reference, keep it with the section title */
+    .preview-references-section .preview-entry:only-of-type {
+        page-break-before: avoid;
+    }
+    
+    /* Additional protection: if references section is near page end, keep together */
+    .preview-content .preview-section-title:last-of-type {
+        page-break-after: avoid;
     }
     
     .preview-education-table {
