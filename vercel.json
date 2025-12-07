@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'No build needed - static site'",
+  "outputDirectory": ".",
+  "framework": null,
+  "installCommand": null,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/cvbuilder",
+      "destination": "/mainBuilder.html"
+    },
+    {
+      "source": "/cvbuilder/(.*)",
+      "destination": "/mainBuilder.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/mainBuilder.html",
+      "destination": "/cvbuilder",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
