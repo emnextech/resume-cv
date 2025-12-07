@@ -23,9 +23,6 @@ class AppController {
         if (!window.cvFormManager) {
             console.warn('CVFormManager not initialized');
         }
-        if (!window.resumeFormManager) {
-            console.warn('ResumeFormManager not initialized');
-        }
         if (!window.previewManager) {
             console.warn('PreviewManager not initialized');
         }
@@ -36,7 +33,6 @@ class AppController {
 
     setupFormWatchers() {
         // CV form watchers are handled in cv-form.js
-        // Resume form watchers are handled in resume-form.js
         // Preview updates are triggered automatically on input changes
     }
 }
@@ -49,7 +45,6 @@ window.getAppState = () => {
     return {
         currentTab: window.tabManager ? window.tabManager.getCurrentTab() : null,
         cvData: window.cvFormManager ? window.cvFormManager.getData() : null,
-        resumeData: window.resumeFormManager ? window.resumeFormManager.getData() : null,
         currentTemplate: window.previewManager ? window.previewManager.getCurrentTemplate() : null
     };
 };

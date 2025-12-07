@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV & Résumé Generator - Builder</title>
+    <title>CareerCraft - CV Builder</title>
     <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/layout.css">
     <link rel="stylesheet" href="styles/tabs.css">
     <link rel="stylesheet" href="styles/preview.css">
     <link rel="stylesheet" href="styles/builder-enhancements.css">
     <link rel="stylesheet" href="styles/export-enhancements.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="styles/ux-enhancements.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
 </head>
 <body>
-    <div class="container">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="container" id="main-content">
         <header style="display: none;">
             <div>
-                <h1 id="builder-title">CV & Résumé Generator</h1>
+                <h1 id="builder-title">CareerCraft - CV Builder</h1>
             </div>
         </header>
 
@@ -31,6 +31,7 @@
                         <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
+                <span class="navbar-brand-text">CareerCraft</span>
             </div>
             <div class="navbar-controls">
                 <div class="template-selector">
@@ -67,8 +68,14 @@
                 </div>
             </div>
             <div class="navbar-download">
-                <button id="export-pdf" class="download-btn">Download PDF</button>
-                <button id="export-docx" class="download-btn">Download DOCX</button>
+                <button id="download-btn" class="download-btn">
+                    <span>Download</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </button>
             </div>
         </nav>
 
@@ -209,98 +216,46 @@
                     <!-- Skills -->
                     <div class="form-group" id="cv-skills-section">
                         <h3>Skills</h3>
-                        <textarea id="cv-skills" rows="4" placeholder="e.g., Python, JavaScript, React, Node.js, Networking, UI Design (comma-separated or one per line)" data-field="skills"></textarea>
+                        <label for="cv-industry-select" class="form-label">Select Industry</label>
+                        <select id="cv-industry-select" class="form-select">
+                            <option value="">-- Select an Industry --</option>
+                            <option value="it">IT</option>
+                            <option value="business">Business</option>
+                            <option value="education">Education</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="health">Health</option>
+                            <option value="hospitality">Hospitality</option>
+                        </select>
+                        <div id="cv-skills-container" class="skills-checkbox-container" style="display: none;">
+                            <label class="form-label">Select Your Skills</label>
+                            <div id="cv-skills-checkboxes" class="skills-checkboxes">
+                                <!-- Skills checkboxes will be dynamically generated here -->
+                            </div>
+                        </div>
+                        <div id="cv-selected-skills-display" class="selected-skills-display" style="display: none;">
+                            <label class="form-label">Selected Skills</label>
+                            <div id="cv-selected-skills-list" class="selected-skills-list">
+                                <!-- Selected skills will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="form-group" id="cv-references-section">
+                        <h3>References</h3>
+                        <div id="cv-references-container">
+                            <div class="entry-item">
+                                <input type="text" class="entry-field" placeholder="Name" data-field="name">
+                                <input type="text" class="entry-field" placeholder="Position" data-field="position">
+                                <input type="tel" class="entry-field" placeholder="Phone Number" data-field="phone">
+                                <input type="email" class="entry-field" placeholder="Email (Optional)" data-field="email">
+                            </div>
+                        </div>
+                        <button type="button" class="add-btn" data-add="references">+ Add Reference</button>
                     </div>
                 </div>
             </section>
 
-            <!-- Résumé Form Section -->
-            <section id="resume-section" class="form-section" style="display: none;">
-                <div class="form-container">
-                    <!-- Contact Information -->
-                    <div class="form-group" id="resume-contact-info">
-                        <h3>Contact Information</h3>
-                        <input type="text" id="resume-name" placeholder="e.g., Sarah Johnson" data-field="name">
-                        <input type="email" id="resume-email" placeholder="e.g., sarah.j@email.com" data-field="email">
-                        <input type="tel" id="resume-phone" placeholder="e.g., +1 (555) 123-4567" data-field="phone">
-                        <input type="text" id="resume-location" placeholder="e.g., New York, NY" data-field="location">
-                        <input type="url" id="resume-linkedin" placeholder="e.g., https://linkedin.com/in/sarahjohnson" data-field="linkedin">
-                    </div>
-
-                    <!-- Short Summary -->
-                    <div class="form-group" id="resume-summary-section">
-                        <h3>Professional Summary</h3>
-                        <textarea id="resume-summary" rows="3" placeholder="Keep it concise - 2-3 lines that summarize your professional experience and goals..." data-field="summary"></textarea>
-                    </div>
-
-                    <!-- Key Skills -->
-                    <div class="form-group" id="resume-skills-section">
-                        <h3>Key Skills</h3>
-                        <textarea id="resume-skills" rows="3" placeholder="e.g., JavaScript, React, Node.js, Python, AWS (comma-separated)" data-field="skills"></textarea>
-                    </div>
-
-                    <!-- Work Experience -->
-                    <div class="form-group" id="resume-work-section">
-                        <h3>Work Experience</h3>
-                        <div id="resume-work-container">
-                            <div class="entry-item">
-                                <input type="text" class="entry-field" placeholder="Job Title" data-field="title">
-                                <input type="text" class="entry-field" placeholder="Company" data-field="company">
-                                <input type="text" class="entry-field" placeholder="Period" data-field="period">
-                                <textarea class="entry-field" rows="2" placeholder="Key achievements (bullet points)" data-field="achievements"></textarea>
-                            </div>
-                        </div>
-                        <button type="button" class="add-btn" data-add="work">+ Add Experience</button>
-                    </div>
-
-                    <!-- Projects -->
-                    <div class="form-group" id="resume-projects-section">
-                        <h3>Projects</h3>
-                        <div id="resume-projects-container">
-                            <div class="entry-item">
-                                <input type="text" class="entry-field" placeholder="Project Name" data-field="name">
-                                <input type="text" class="entry-field" placeholder="Technologies" data-field="tech">
-                                <textarea class="entry-field" rows="2" placeholder="Brief description" data-field="description"></textarea>
-                            </div>
-                        </div>
-                        <button type="button" class="add-btn" data-add="projects">+ Add Project</button>
-                    </div>
-
-                    <!-- Education -->
-                    <div class="form-group" id="resume-education-section">
-                        <h3>Academic Qualifications</h3>
-                        <div class="education-table-container">
-                            <table id="resume-education-table" class="education-table">
-                                <thead>
-                                    <tr>
-                                        <th>Year</th>
-                                        <th>Level</th>
-                                        <th>School</th>
-                                        <th>Qualification</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="resume-education-container">
-                                    <!-- Rows will be dynamically added here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <button type="button" class="add-btn" data-add="education">+ Add Row</button>
-                    </div>
-
-                    <!-- Certifications (Optional) -->
-                    <div class="form-group" id="resume-certifications-section">
-                        <h3>Certifications (Optional)</h3>
-                        <div id="resume-certifications-container">
-                            <div class="entry-item">
-                                <input type="text" class="entry-field" placeholder="Certification" data-field="name">
-                                <input type="text" class="entry-field" placeholder="Year" data-field="year">
-                            </div>
-                        </div>
-                        <button type="button" class="add-btn" data-add="certifications">+ Add Certification</button>
-                    </div>
-                </div>
-            </section>
 
             <!-- Preview Section -->
             <aside class="preview-section">
@@ -313,6 +268,38 @@
         </div>
     </div>
 
+    <!-- Quality Selection Modal -->
+    <div class="quality-modal" id="quality-modal">
+        <div class="quality-modal-overlay"></div>
+        <div class="quality-modal-content">
+            <div class="quality-modal-header">
+                <h3>Select Export Quality</h3>
+                <button class="quality-modal-close" id="quality-modal-close">&times;</button>
+            </div>
+            <div class="quality-modal-body">
+                <div class="quality-option-group">
+                    <label>Quality:</label>
+                    <select id="quality-select" class="quality-select">
+                        <option value="standard">Standard (Recommended)</option>
+                        <option value="high">High Quality</option>
+                    </select>
+                </div>
+                <div class="quality-option-group">
+                    <label>Paper Size:</label>
+                    <select id="paper-size-select" class="quality-select">
+                        <option value="a4">A4</option>
+                        <option value="letter">Letter</option>
+                        <option value="legal">Legal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="quality-modal-footer">
+                <button class="quality-btn-cancel" id="quality-btn-cancel">Cancel</button>
+                <button class="quality-btn-confirm" id="quality-btn-confirm">Download</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Export Progress Bar -->
     <div class="export-progress" id="export-progress">
         <div class="export-progress-bar" id="export-progress-bar"></div>
@@ -321,12 +308,11 @@
     <script src="js/main.js"></script>
     <script src="js/builder-init.js"></script>
     <script src="js/cv-form.js"></script>
-    <script src="js/resume-form.js"></script>
     <script src="js/preview.js"></script>
     <script src="js/preview-enhancements.js"></script>
-    <script src="js/pdf-export.js"></script>
     <script src="js/doc-export.js"></script>
     <script src="js/export-enhancements.js"></script>
     <script src="js/builder-enhancements.js"></script>
+    <script src="js/ux-enhancements.js"></script>
 </body>
 </html>

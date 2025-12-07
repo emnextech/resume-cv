@@ -167,17 +167,7 @@ class ResumeFormManager {
             } else if (e.target.classList.contains('remove-btn')) {
                 const entryItem = e.target.closest('.entry-item');
                 if (entryItem) {
-                    const container = entryItem.parentElement;
-                    const index = Array.from(container.children).indexOf(entryItem);
-                    const fieldType = container.id.replace('resume-', '').replace('-container', '');
-                    
-                    if (this.data[fieldType] && this.data[fieldType].length > 1) {
-                        this.data[fieldType].splice(index, 1);
-                        entryItem.remove();
-                        if (window.previewManager) {
-                            window.previewManager.updatePreview();
-                        }
-                    }
+                    this.handleRemoveEntry(entryItem);
                 }
             }
         });
@@ -307,13 +297,23 @@ class ResumeFormManager {
         removeBtn.type = 'button';
         removeBtn.className = 'table-remove-btn';
         removeBtn.textContent = 'Remove';
-        removeBtn.addEventListener('click', () => {
+        removeBtn.addEventListener('click', async () => {
             const index = Array.from(container.children).indexOf(row);
             if (this.data.education && this.data.education.length > 1) {
+                const confirmed = await window.uxEnhancements?.showConfirmationDialog(
+                    'Are you sure you want to remove this education entry?',
+                    'Remove Entry'
+                );
+                if (!confirmed) return;
+
                 this.data.education.splice(index, 1);
                 row.remove();
                 if (window.previewManager) {
                     window.previewManager.updatePreview();
+                }
+                // Save state for undo
+                if (window.uxEnhancements) {
+                    setTimeout(() => window.uxEnhancements.saveState(), 100);
                 }
             } else if (this.data.education && this.data.education.length === 1) {
                 // Keep at least one row, just clear it
@@ -357,6 +357,30 @@ class ResumeFormManager {
                 }
             });
         });
+    }
+
+    async handleRemoveEntry(entryItem) {
+        const confirmed = await window.uxEnhancements?.showConfirmationDialog(
+            'Are you sure you want to remove this entry?',
+            'Remove Entry'
+        );
+        if (!confirmed) return;
+
+        const container = entryItem.parentElement;
+        const index = Array.from(container.children).indexOf(entryItem);
+        const fieldType = container.id.replace('resume-', '').replace('-container', '');
+        
+        if (this.data[fieldType] && this.data[fieldType].length > 1) {
+            this.data[fieldType].splice(index, 1);
+            entryItem.remove();
+            if (window.previewManager) {
+                window.previewManager.updatePreview();
+            }
+            // Save state for undo
+            if (window.uxEnhancements) {
+                setTimeout(() => window.uxEnhancements.saveState(), 100);
+            }
+        }
     }
 
     getData() {

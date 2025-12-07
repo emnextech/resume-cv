@@ -6,16 +6,8 @@ class BuilderInitializer {
     }
 
     init() {
-        // Get type from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        this.documentType = urlParams.get('type') || 'cv';
-
-        // Validate type
-        if (this.documentType !== 'cv' && this.documentType !== 'resume') {
-            // Invalid type, redirect to landing page
-            window.location.href = 'index.html';
-            return;
-        }
+        // Always use CV type (resume support removed)
+        this.documentType = 'cv';
 
         // Create a simple type manager for compatibility with existing code (needed early)
         this.createTypeManager();
@@ -41,27 +33,17 @@ class BuilderInitializer {
     }
 
     setupFormSection() {
-        // Hide both sections first
+        // Show CV section only
         const cvSection = document.getElementById('cv-section');
-        const resumeSection = document.getElementById('resume-section');
-
-        if (cvSection) cvSection.style.display = 'none';
-        if (resumeSection) resumeSection.style.display = 'none';
-
-        // Show the appropriate section
-        if (this.documentType === 'cv' && cvSection) {
+        if (cvSection) {
             cvSection.style.display = 'block';
-        } else if (this.documentType === 'resume' && resumeSection) {
-            resumeSection.style.display = 'block';
         }
     }
 
     updateHeader() {
         const headerTitle = document.getElementById('builder-title');
         if (headerTitle) {
-            headerTitle.textContent = this.documentType === 'cv' 
-                ? 'CV Builder' 
-                : 'Résumé Builder';
+            headerTitle.textContent = 'CareerCraft - CV Builder';
         }
     }
 

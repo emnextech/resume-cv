@@ -5,6 +5,7 @@ class PDFExporter {
     }
 
     init() {
+        // Button may not exist if using dropdown - handled by export-enhancements.js
         const exportBtn = document.getElementById('export-pdf');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
@@ -21,16 +22,23 @@ class PDFExporter {
                 return;
             }
 
-            const currentTab = window.tabManager ? window.tabManager.getCurrentTab() : 'cv';
-            const defaultFileName = currentTab === 'cv' ? 'CV.pdf' : 'Resume.pdf';
+            // Ensure preview is fully rendered with all styles applied
+            // Force a reflow to ensure all CSS is applied
+            void previewContent.offsetHeight;
+            
+            // Wait a brief moment for any pending style calculations
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const defaultFileName = 'CV.pdf';
             const finalFileName = fileName || defaultFileName;
             
             // Check if html2canvas is available for better rendering
+            // Canvas export preserves all visual styles (template, color, font)
             if (typeof html2canvas !== 'undefined') {
-                await this.exportWithCanvas(previewContent, currentTab, quality, paperSize, finalFileName);
+                await this.exportWithCanvas(previewContent, 'cv', quality, paperSize, finalFileName);
             } else {
-                // Fallback to text-based rendering
-                this.exportTextBased(previewContent, currentTab, paperSize, finalFileName);
+                // Fallback to text-based rendering (limited style support)
+                this.exportTextBased(previewContent, 'cv', paperSize, finalFileName);
             }
         } catch (error) {
             console.error('PDF Export Error:', error);
@@ -42,8 +50,14 @@ class PDFExporter {
         return this.exportToPDF(quality, paperSize, fileName);
     }
 
-    async exportWithCanvas(previewContent, currentTab, quality = 'standard', paperSize = 'a4', fileName = null) {
+    async exportWithCanvas(previewContent, currentTab = 'cv', quality = 'standard', paperSize = 'a4', fileName = null) {
         try {
+            // Standard 1 inch (25.4mm) margins on all sides
+            const margin = 25.4;
+            const paperDimensions = this.getPaperDimensions(paperSize);
+            const pageWidth = paperDimensions.width;
+            const pageHeight = paperDimensions.height;
+            
             // Determine scale based on quality
             const scale = quality === 'high' ? 3 : 2;
             
@@ -58,27 +72,28 @@ class PDFExporter {
             const { jsPDF } = window.jspdf;
             const imgData = canvas.toDataURL('image/png', quality === 'high' ? 1.0 : 0.92);
             
-            // Get paper dimensions
-            const paperDimensions = this.getPaperDimensions(paperSize);
-            const imgWidth = paperDimensions.width;
-            const pageHeight = paperDimensions.height;
+            // Calculate image dimensions to fit within margins
+            // Content area width: page width minus left and right margins
+            const contentAreaWidth = pageWidth - (margin * 2);
+            const imgWidth = contentAreaWidth;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             let heightLeft = imgHeight;
 
             const doc = new jsPDF('p', 'mm', paperSize);
-            let position = 0;
+            // Start image at left margin position
+            let position = margin;
 
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+            heightLeft -= (pageHeight - (margin * 2));
 
             while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
+                position = margin;
                 doc.addPage();
-                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
+                doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+                heightLeft -= (pageHeight - (margin * 2));
             }
 
-            const defaultFileName = currentTab === 'cv' ? 'CV.pdf' : 'Resume.pdf';
+            const defaultFileName = 'CV.pdf';
             const finalFileName = fileName || defaultFileName;
             doc.save(finalFileName);
         } catch (error) {
@@ -96,7 +111,7 @@ class PDFExporter {
         return dimensions[paperSize] || dimensions['a4'];
     }
 
-    exportTextBased(previewContent, currentTab, paperSize = 'a4', fileName = null) {
+    exportTextBased(previewContent, currentTab = 'cv', paperSize = 'a4', fileName = null) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -106,23 +121,34 @@ class PDFExporter {
 
         this.renderPDFContent(doc, previewContent, currentTab, paperSize);
 
-        const defaultFileName = currentTab === 'cv' ? 'CV.pdf' : 'Resume.pdf';
+        const defaultFileName = 'CV.pdf';
         const finalFileName = fileName || defaultFileName;
         doc.save(finalFileName);
     }
 
-    renderPDFContent(doc, content, type, paperSize = 'a4') {
-        let yPos = 20;
+    renderPDFContent(doc, content, type = 'cv', paperSize = 'a4') {
+        // Standard 1 inch (25.4mm) margins on all sides
+        const margin = 25.4;
         const paperDimensions = this.getPaperDimensions(paperSize);
         const pageHeight = paperDimensions.height;
-        const margin = 20;
-        const maxWidth = paperDimensions.width - (margin * 2);
+        const pageWidth = paperDimensions.width;
+        
+        // Content starts slightly inward from margins (left alignment)
+        // Content area width: page width minus left and right margins
+        const contentAreaWidth = pageWidth - (margin * 2);
+        const contentStartX = margin;
+        
+        // Table width must not exceed the printable area
+        const maxTableWidth = contentAreaWidth;
+        const maxWidth = contentAreaWidth;
+        
+        let yPos = margin;
 
         // Helper to add new page if needed
         const checkPageBreak = (requiredSpace) => {
             if (yPos + requiredSpace > pageHeight - margin) {
                 doc.addPage();
-                yPos = margin;
+                yPos = margin; // Reset to top margin on new page
                 return true;
             }
             return false;
@@ -162,7 +188,7 @@ class PDFExporter {
             doc.setFont(undefined, 'italic');
             const summaryText = summary.textContent.trim();
             const summaryLines = doc.splitTextToSize(summaryText, maxWidth);
-            doc.text(summaryLines, margin, yPos);
+            doc.text(summaryLines, contentStartX, yPos);
             yPos += summaryLines.length * 5 + 5;
         }
 
@@ -174,15 +200,23 @@ class PDFExporter {
             // Section title
             doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
-            doc.text(sectionTitle.textContent.trim(), margin, yPos);
+            doc.text(sectionTitle.textContent.trim(), contentStartX, yPos);
             yPos += 8;
-            doc.line(margin, yPos - 2, margin + maxWidth, yPos - 2);
+            doc.line(contentStartX, yPos - 2, contentStartX + maxWidth, yPos - 2);
             yPos += 5;
 
             // Section content
             let currentElement = sectionTitle.nextElementSibling;
             while (currentElement && !currentElement.classList.contains('preview-section-title')) {
-                if (currentElement.classList.contains('preview-entry')) {
+                // Handle education tables and other tables that appear directly after section titles
+                if (currentElement.tagName === 'TABLE' || currentElement.classList.contains('preview-education-table')) {
+                    checkPageBreak(20);
+                    const table = currentElement.tagName === 'TABLE' ? currentElement : currentElement.querySelector('table');
+                    if (table) {
+                        const tableHeight = this.renderTable(doc, table, contentStartX, yPos, maxTableWidth);
+                        yPos = tableHeight + 5; // Space after table
+                    }
+                } else if (currentElement.classList.contains('preview-entry')) {
                     checkPageBreak(20);
                     
                     const entryTitle = currentElement.querySelector('.preview-entry-title');
@@ -192,14 +226,14 @@ class PDFExporter {
                     if (entryTitle) {
                         doc.setFontSize(12);
                         doc.setFont(undefined, 'bold');
-                        doc.text(entryTitle.textContent.trim(), margin, yPos);
+                        doc.text(entryTitle.textContent.trim(), contentStartX, yPos);
                         yPos += 6;
                     }
                     
                     if (entrySubtitle) {
                         doc.setFontSize(10);
                         doc.setFont(undefined, 'normal');
-                        doc.text(entrySubtitle.textContent.trim(), margin, yPos);
+                        doc.text(entrySubtitle.textContent.trim(), contentStartX, yPos);
                         yPos += 5;
                     }
                     
@@ -207,8 +241,16 @@ class PDFExporter {
                         doc.setFontSize(10);
                         const detailsText = entryDetails.textContent.trim();
                         const detailsLines = doc.splitTextToSize(detailsText, maxWidth);
-                        doc.text(detailsLines, margin, yPos);
+                        doc.text(detailsLines, contentStartX, yPos);
                         yPos += detailsLines.length * 5;
+                    }
+                    
+                    // Handle tables within entries
+                    const table = currentElement.querySelector('table');
+                    if (table) {
+                        checkPageBreak(15);
+                        const tableHeight = this.renderTable(doc, table, contentStartX, yPos, maxTableWidth);
+                        yPos = tableHeight + 5; // Space after table
                     }
                     
                     yPos += 3;
@@ -222,7 +264,7 @@ class PDFExporter {
                     });
                     doc.setFontSize(10);
                     const skillLines = doc.splitTextToSize(skillText, maxWidth);
-                    doc.text(skillLines, margin, yPos);
+                    doc.text(skillLines, contentStartX, yPos);
                     yPos += skillLines.length * 5 + 5;
                 }
                 
@@ -230,6 +272,55 @@ class PDFExporter {
             }
         });
     }
+
+    renderTable(doc, table, startX, startY, maxWidth) {
+        // Render table ensuring it stays within printable area (between left and right margins)
+        const rows = table.querySelectorAll('tr');
+        let currentY = startY;
+        const baseRowHeight = 8;
+        const cellPadding = 2;
+        const lineHeight = 5;
+        
+        rows.forEach((row, rowIndex) => {
+            const cells = row.querySelectorAll('th, td');
+            const cellCount = cells.length;
+            if (cellCount === 0) return;
+            
+            // Table width must not exceed printable area
+            const cellWidth = maxWidth / cellCount;
+            let currentX = startX;
+            let maxRowHeight = baseRowHeight;
+            
+            // First pass: calculate row height based on content
+            cells.forEach((cell) => {
+                const cellText = cell.textContent.trim();
+                const textLines = doc.splitTextToSize(cellText, cellWidth - (cellPadding * 2));
+                const cellHeight = Math.max(baseRowHeight, textLines.length * lineHeight + (cellPadding * 2));
+                maxRowHeight = Math.max(maxRowHeight, cellHeight);
+            });
+            
+            // Second pass: render cells
+            cells.forEach((cell, cellIndex) => {
+                const cellText = cell.textContent.trim();
+                doc.setFontSize(10);
+                doc.setFont(undefined, row.querySelector('th') ? 'bold' : 'normal');
+                
+                // Ensure text fits in cell
+                const textLines = doc.splitTextToSize(cellText, cellWidth - (cellPadding * 2));
+                doc.text(textLines, currentX + cellPadding, currentY + 5);
+                
+                // Draw cell border - table stays within printable area
+                doc.rect(currentX, currentY - maxRowHeight, cellWidth, maxRowHeight);
+                
+                currentX += cellWidth;
+            });
+            
+            currentY += maxRowHeight;
+        });
+        
+        return currentY;
+    }
+
 }
 
 // Initialize when DOM is ready

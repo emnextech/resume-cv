@@ -24,6 +24,21 @@
     gap: 15px;
 }
 
+/* Utility Controls Group - Groups save and help buttons together - moved to left side */
+.utility-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    order: 1;
+}
+
+@media (max-width: 1024px) {
+    .utility-controls {
+        order: 1; /* Stay on left side */
+    }
+}
+
 .save-draft-btn {
     display: inline-flex;
     align-items: center;
@@ -148,13 +163,13 @@
 
 /* Field Validation */
 .field-error {
-    border-color: #EF4444 !important;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    border-color: var(--optimism-blue, #1a7fa3) !important;
+    box-shadow: 0 0 0 3px rgba(26, 127, 163, 0.1) !important;
 }
 
 .field-error-message {
     display: block;
-    color: #EF4444;
+    color: var(--optimism-blue, #1a7fa3);
     font-size: 12px;
     margin-top: 5px;
     font-weight: 500;
@@ -258,9 +273,9 @@
 }
 
 .clear-all-btn:hover {
-    background: #FEE2E2;
-    border-color: #EF4444;
-    color: #EF4444;
+    background: var(--bg-hover, #E2E8F0);
+    border-color: var(--optimism-blue, #1a7fa3);
+    color: var(--optimism-blue, #1a7fa3);
 }
 
 .form-group h3 {
@@ -313,7 +328,7 @@
 }
 
 .notification-error {
-    border-left: 4px solid #EF4444;
+    border-left: 4px solid var(--optimism-blue, #1a7fa3);
 }
 
 .notification-info {

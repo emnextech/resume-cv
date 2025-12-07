@@ -28,10 +28,8 @@ class BuilderEnhancements {
         
         // Wait for form managers to be ready
         this.waitForFormManager(() => {
-            // Get form manager reference
-            this.formManager = this.documentType === 'cv' 
-                ? window.cvFormManager 
-                : window.resumeFormManager;
+            // Get form manager reference (CV only)
+            this.formManager = window.cvFormManager;
 
             // Setup all enhancements
             this.setupHeader();
@@ -56,9 +54,7 @@ class BuilderEnhancements {
 
     waitForFormManager(callback) {
         const checkManager = () => {
-            const manager = this.documentType === 'cv' 
-                ? window.cvFormManager 
-                : window.resumeFormManager;
+            const manager = window.cvFormManager;
             
             if (manager) {
                 callback();
@@ -86,15 +82,7 @@ class BuilderEnhancements {
         const navbarControls = navbar.querySelector('.navbar-controls');
         if (!navbarControls) return;
 
-        // Save Draft button (icon only)
-        const saveDraftBtn = document.createElement('button');
-        saveDraftBtn.className = 'save-draft-btn';
-        saveDraftBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-        saveDraftBtn.setAttribute('title', 'Save Draft');
-        saveDraftBtn.addEventListener('click', () => this.saveDraft(true));
-        navbarControls.insertBefore(saveDraftBtn, navbarControls.firstChild);
-
-        // Progress indicator (bar only, no text)
+        // Progress indicator (bar only, no text) - placed at the beginning
         const progressContainer = document.createElement('div');
         progressContainer.className = 'progress-container';
         const progressBar = document.createElement('div');
@@ -104,12 +92,39 @@ class BuilderEnhancements {
         progressBar.appendChild(progressFill);
         progressContainer.appendChild(progressBar);
         progressContainer.setAttribute('title', 'Completion Progress');
-        navbarControls.insertBefore(progressContainer, saveDraftBtn.nextSibling);
+        navbarControls.insertBefore(progressContainer, navbarControls.firstChild);
+
+        // Create utility controls group for save and help buttons - place on left side
+        let utilityControls = navbar.querySelector('.utility-controls');
+        if (!utilityControls) {
+            utilityControls = document.createElement('div');
+            utilityControls.className = 'utility-controls';
+            // Insert after navbar-left to place on left side
+            const navbarLeft = navbar.querySelector('.navbar-left');
+            if (navbarLeft) {
+                navbarLeft.appendChild(utilityControls);
+            } else {
+                // If navbar-left doesn't exist, create it
+                const newNavbarLeft = document.createElement('div');
+                newNavbarLeft.className = 'navbar-left';
+                newNavbarLeft.appendChild(utilityControls);
+                navbar.insertBefore(newNavbarLeft, navbar.firstChild);
+            }
+        }
+
+        // Save Draft button (icon only)
+        const saveDraftBtn = document.createElement('button');
+        saveDraftBtn.className = 'save-draft-btn';
+        saveDraftBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        saveDraftBtn.setAttribute('title', 'Save Draft');
+        saveDraftBtn.addEventListener('click', () => this.saveDraft(true));
+        utilityControls.appendChild(saveDraftBtn);
 
         // Store references
         this.progressBar = progressFill;
         this.progressText = null; // No text element needed
         this.saveDraftBtn = saveDraftBtn;
+        this.utilityControls = utilityControls; // Store for help button placement
     }
 
     setupProgressIndicator() {
@@ -156,7 +171,7 @@ class BuilderEnhancements {
     }
 
     getSections() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const section = document.getElementById(sectionId);
         if (!section) return [];
         
@@ -208,17 +223,15 @@ class BuilderEnhancements {
 
             const parsed = JSON.parse(draftData);
             
-            // Ask user if they want to load draft
-            if (confirm('A saved draft was found. Would you like to load it?')) {
-                if (parsed.documentType !== this.documentType) {
-                    alert('Draft type mismatch. Creating new document.');
-                    return;
-                }
-
-                // Populate form with draft data
-                this.populateFormFromDraft(parsed.data);
-                this.showNotification('Draft loaded successfully!', 'success');
+            // Check if draft type matches current document type
+            if (parsed.documentType !== this.documentType) {
+                // Type mismatch - don't load, but don't show alert
+                return;
             }
+
+            // Automatically load draft without confirmation
+            this.populateFormFromDraft(parsed.data);
+            // No notification - silent load
         } catch (e) {
             console.error('Failed to load draft:', e);
         }
@@ -227,13 +240,9 @@ class BuilderEnhancements {
     populateFormFromDraft(data) {
         if (!this.formManager) return;
 
-        // For CV
-        if (this.documentType === 'cv' && window.cvFormManager) {
+        // Populate CV form
+        if (window.cvFormManager) {
             this.populateCVForm(data);
-        } 
-        // For Resume
-        else if (this.documentType === 'resume' && window.resumeFormManager) {
-            this.populateResumeForm(data);
         }
 
         // Update form manager data
@@ -249,14 +258,35 @@ class BuilderEnhancements {
     }
 
     populateCVForm(data) {
-        // Single fields
-        ['name', 'email', 'phone', 'address', 'website', 'summary', 'skills'].forEach(field => {
+        // Single fields (excluding skills which is handled separately)
+        ['name', 'email', 'phone', 'address', 'website', 'summary'].forEach(field => {
             const el = document.getElementById(`cv-${field}`);
             if (el && data[field]) el.value = data[field];
         });
 
+        // Handle skills array
+        if (data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
+            if (window.cvFormManager) {
+                window.cvFormManager.selectedSkills = [...data.skills];
+                window.cvFormManager.data.skills = [...data.skills];
+                // Try to detect industry from skills (default to IT if can't determine)
+                const industrySelect = document.getElementById('cv-industry-select');
+                if (industrySelect) {
+                    // Simple heuristic: if skills match IT skills, set to IT
+                    const itSkills = window.cvFormManager.getIndustrySkills().it;
+                    const hasITSkills = data.skills.some(skill => itSkills.includes(skill));
+                    if (hasITSkills) {
+                        industrySelect.value = 'it';
+                        window.cvFormManager.selectedIndustry = 'it';
+                        window.cvFormManager.loadSkillsForIndustry('it');
+                    }
+                }
+            }
+        }
+
         // Array fields
         Object.keys(data).forEach(key => {
+            if (key === 'skills') return; // Already handled above
             if (Array.isArray(data[key]) && key !== 'education') {
                 const container = document.getElementById(`cv-${key}-container`);
                 if (container) {
@@ -380,7 +410,7 @@ class BuilderEnhancements {
     }
 
     setupFieldValidation() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -455,7 +485,7 @@ class BuilderEnhancements {
     }
 
     setupCharacterCounters() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -484,7 +514,7 @@ class BuilderEnhancements {
     }
 
     setupDragAndDrop() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -569,7 +599,7 @@ class BuilderEnhancements {
         if (!this.formManager) return;
 
         const containerId = container.id;
-        const fieldType = containerId.replace(/^(cv|resume)-/, '').replace('-container$', '');
+            const fieldType = containerId.replace(/^cv-/, '').replace('-container$', '');
         
         if (fieldType === 'education') return; // Education uses table, handled differently
         
@@ -593,7 +623,7 @@ class BuilderEnhancements {
 
     setupAutosave() {
         // Listen for form changes
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -664,9 +694,7 @@ class BuilderEnhancements {
         // Add tooltips to complex fields
         const tooltips = {
             'cv-summary': 'Write 2-4 sentences highlighting your key qualifications and career objectives.',
-            'resume-summary': 'Keep it concise - 2-3 lines that summarize your professional experience and goals.',
-            'cv-skills': 'List skills separated by commas or on separate lines. Include technical and soft skills.',
-            'resume-skills': 'List your most relevant skills for the position you\'re applying for.'
+            'cv-skills': 'List skills separated by commas or on separate lines. Include technical and soft skills.'
         };
 
         Object.keys(tooltips).forEach(fieldId => {
@@ -679,7 +707,7 @@ class BuilderEnhancements {
     }
 
     setupClearAllButtons() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -691,14 +719,18 @@ class BuilderEnhancements {
                 clearBtn.className = 'clear-all-btn';
                 clearBtn.textContent = 'Clear All';
                 clearBtn.type = 'button';
-                clearBtn.addEventListener('click', () => this.clearSection(section));
+                clearBtn.addEventListener('click', async () => await this.clearSection(section));
                 h3.appendChild(clearBtn);
             }
         });
     }
 
-    clearSection(section) {
-        if (!confirm('Are you sure you want to clear all fields in this section?')) return;
+    async clearSection(section) {
+        const confirmed = await window.uxEnhancements?.showConfirmationDialog(
+            'Are you sure you want to clear all fields in this section?',
+            'Clear Section'
+        );
+        if (!confirmed) return;
 
         const inputs = section.querySelectorAll('input, textarea');
         inputs.forEach(input => {
@@ -749,7 +781,7 @@ class BuilderEnhancements {
     }
 
     setupCompletionCheckmarks() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 
@@ -770,7 +802,7 @@ class BuilderEnhancements {
     }
 
     updateCompletionCheckmarks() {
-        const sectionId = this.documentType === 'cv' ? 'cv-section' : 'resume-section';
+        const sectionId = 'cv-section';
         const formSection = document.getElementById(sectionId);
         if (!formSection) return;
 

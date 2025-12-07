@@ -12,6 +12,7 @@ class ExportEnhancements {
     init() {
         this.createExportOptions();
         this.setupEventListeners();
+        this.setupDownloadButton();
         this.updateExportButtons();
     }
 
@@ -21,8 +22,79 @@ class ExportEnhancements {
         return;
     }
 
+    setupDownloadButton() {
+        // Use a retry mechanism to ensure DOM is ready
+        const setupButton = () => {
+            const downloadBtn = document.getElementById('download-btn');
+
+            if (!downloadBtn) {
+                // Retry if element not found
+                setTimeout(setupButton, 100);
+                return;
+            }
+
+            // Directly trigger DOC export on button click
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.triggerDownload('docx');
+            });
+        };
+
+        // Try immediately, then retry if needed
+        setupButton();
+    }
+
+    async triggerDownload(format) {
+        // Use default settings: standard quality, A4 paper size
+        const quality = 'standard';
+        const paperSize = 'a4';
+
+        if (format === 'docx') {
+            await this.exportDOCXWithSettings(quality, paperSize);
+        }
+    }
+
+    async exportDOCXWithSettings(quality, paperSize) {
+        try {
+            this.showProgress(0);
+            
+            const previewContent = document.getElementById('preview-content');
+            if (!previewContent) {
+                this.showNotification('No preview content found', 'error');
+                this.hideProgress();
+                return;
+            }
+
+            const fileName = 'CV.docx';
+
+            this.updateProgress(30);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            this.updateProgress(60);
+            if (window.docxExporter && typeof window.docxExporter.exportToDOCX === 'function') {
+                await window.docxExporter.exportToDOCX(quality, paperSize, fileName);
+            } else {
+                this.showNotification('DOCX exporter not available', 'error');
+                this.hideProgress();
+                return;
+            }
+            
+            this.updateProgress(100);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            this.addToHistory('DOCX', fileName, quality, paperSize);
+            this.showNotification('DOCX exported successfully!', 'success');
+        } catch (error) {
+            console.error('DOCX Export Error:', error);
+            this.showNotification('Error generating DOCX. Please try again.', 'error');
+        } finally {
+            this.hideProgress();
+        }
+    }
+
     setupEventListeners() {
-        // Quality and paper size selectors
+        // Quality and paper size selectors (for legacy support)
         document.getElementById('export-quality')?.addEventListener('change', (e) => {
             this.currentExportSettings.quality = e.target.value;
         });
@@ -31,11 +103,7 @@ class ExportEnhancements {
             this.currentExportSettings.paperSize = e.target.value;
         });
 
-        // Enhanced export buttons
-        document.getElementById('export-pdf-enhanced')?.addEventListener('click', () => {
-            this.exportPDF();
-        });
-
+        // Enhanced export buttons (for legacy support)
         document.getElementById('export-docx-enhanced')?.addEventListener('click', () => {
             this.exportDOCX();
         });
@@ -51,63 +119,10 @@ class ExportEnhancements {
 
     updateExportButtons() {
         // Trigger original export buttons through enhanced ones
-        const pdfBtn = document.getElementById('export-pdf');
         const docxBtn = document.getElementById('export-docx');
         
-        if (pdfBtn && docxBtn) {
+        if (docxBtn) {
             // The enhanced buttons will call the export methods directly
-        }
-    }
-
-    async exportPDF() {
-        const button = document.getElementById('export-pdf-enhanced');
-        if (!button) return;
-
-        try {
-            this.showLoadingState(button, 'Generating PDF...');
-            this.showProgress(0);
-            
-            const previewContent = document.getElementById('preview-content');
-            if (!previewContent) {
-                this.showNotification('No preview content found', 'error');
-                this.hideLoadingState(button);
-                this.hideProgress();
-                return;
-            }
-
-            const currentTab = window.tabManager ? window.tabManager.getCurrentTab() : 'cv';
-            const fileName = currentTab === 'cv' ? 'CV.pdf' : 'Resume.pdf';
-
-            // Get export settings
-            const quality = this.currentExportSettings.quality;
-            const paperSize = this.currentExportSettings.paperSize;
-
-            // Simulate progress
-            this.updateProgress(30);
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            // Call PDF exporter with settings
-            this.updateProgress(60);
-            if (window.pdfExporter && typeof window.pdfExporter.exportToPDFEnhanced === 'function') {
-                await window.pdfExporter.exportToPDFEnhanced(quality, paperSize, fileName);
-            } else if (window.pdfExporter && typeof window.pdfExporter.exportToPDF === 'function') {
-                await window.pdfExporter.exportToPDF(quality, paperSize, fileName);
-            } else {
-                // Fallback to original export
-                document.getElementById('export-pdf')?.click();
-            }
-            
-            this.updateProgress(100);
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            this.addToHistory('PDF', fileName, quality, paperSize);
-            this.showNotification(`PDF exported successfully!`, 'success');
-        } catch (error) {
-            console.error('PDF Export Error:', error);
-            this.showNotification('Error generating PDF. Please try again.', 'error');
-        } finally {
-            this.hideLoadingState(button);
-            this.hideProgress();
         }
     }
 
@@ -127,8 +142,7 @@ class ExportEnhancements {
                 return;
             }
 
-            const currentTab = window.tabManager ? window.tabManager.getCurrentTab() : 'cv';
-            const fileName = currentTab === 'cv' ? 'CV.docx' : 'Resume.docx';
+            const fileName = 'CV.docx';
 
             // Get export settings
             const quality = this.currentExportSettings.quality;
@@ -177,12 +191,7 @@ class ExportEnhancements {
         button.classList.remove('loading');
         const text = button.querySelector('.export-btn-text');
         if (text) {
-            const icon = button.querySelector('.export-btn-icon');
-            if (icon.textContent === '📄') {
-                text.textContent = 'Download PDF';
-            } else {
-                text.textContent = 'Download DOCX';
-            }
+            text.textContent = 'Download DOCX';
         }
     }
 
@@ -247,8 +256,9 @@ class ExportEnhancements {
         this.exportHistory.forEach((record, index) => {
             const item = document.createElement('div');
             item.className = 'export-history-item';
+            const iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
             item.innerHTML = `
-                <div class="history-item-icon">${record.type === 'PDF' ? '📄' : '📝'}</div>
+                <div class="history-item-icon">${iconSvg}</div>
                 <div class="history-item-details">
                     <div class="history-item-name">${record.fileName}</div>
                     <div class="history-item-meta">${record.quality} quality • ${record.paperSize.toUpperCase()} • ${record.date}</div>

@@ -12,6 +12,51 @@
     align-items: center;
     gap: var(--spacing-lg, 24px);
     margin-bottom: 0;
+    flex-wrap: wrap;
+}
+
+/* Left side: back button, brand name */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md, 16px);
+    order: 1;
+}
+
+.navbar-brand-text {
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--optimism-blue, #1a7fa3);
+    text-decoration: none;
+}
+
+/* Middle: controls */
+.navbar-controls {
+    display: flex;
+    gap: var(--spacing-md, 16px);
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: center;
+    order: 2;
+}
+
+/* Right side: download button */
+.navbar-download {
+    display: flex;
+    gap: var(--spacing-sm, 8px);
+    align-items: center;
+    margin-left: auto;
+    order: 3;
+}
+
+/* Utility controls (save, help) - move to left side */
+.utility-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm, 8px);
+    order: 1;
+    margin-left: var(--spacing-md, 16px);
 }
 
 .navbar-left {
@@ -69,10 +114,17 @@
     font-weight: var(--font-weight-semibold, 600);
     transition: background 0.3s;
     min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .download-btn:hover {
     background: var(--optimism-blue-dark, #0f5f7a);
+}
+
+.download-btn svg {
+    flex-shrink: 0;
 }
 
 .template-selector,
@@ -125,10 +177,12 @@
 }
 
 .form-section {
-    position: relative;
+    position: sticky;
+    top: 70px;
     min-width: 320px;
-    height: 100%;
+    height: calc(100vh - 70px);
     overflow-y: auto;
+    align-self: start;
 }
 
 .preview-section {
@@ -139,7 +193,7 @@
     border: none;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100vh - 70px);
     min-width: 320px;
     position: sticky;
     top: 70px;
@@ -196,8 +250,15 @@
         align-items: stretch;
     }
 
+    .utility-controls {
+        margin-left: 0;
+        margin-top: var(--spacing-sm, 8px);
+        justify-content: flex-start;
+    }
+
     .navbar-download {
         justify-content: stretch;
+        margin-top: var(--spacing-sm, 8px);
     }
 
     .download-btn {

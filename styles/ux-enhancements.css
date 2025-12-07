@@ -1,0 +1,794 @@
+/* UX Enhancements - Smooth Transitions, Focus States, Loading States, Empty States */
+
+/* ============================================
+   SMOOTH TRANSITIONS FOR INTERACTIVE ELEMENTS
+   ============================================ */
+
+/* Buttons with smooth transitions */
+button, .add-btn, .remove-btn, .download-btn, .export-btn,
+.save-draft-btn, .clear-all-btn, .table-remove-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, box-shadow;
+}
+
+button:not(:disabled):hover,
+.add-btn:not(:disabled):hover,
+.download-btn:not(:disabled):hover,
+.export-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:not(:disabled):active,
+.add-btn:not(:disabled):active,
+.download-btn:not(:disabled):active,
+.export-btn:not(:disabled):active {
+    transform: translateY(0);
+    transition-duration: 0.1s;
+}
+
+/* Input fields with smooth transitions */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: border-color, box-shadow, transform;
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="tel"]:hover,
+input[type="url"]:hover,
+textarea:hover,
+select:hover {
+    border-color: var(--border-medium, #CBD5E1);
+}
+
+/* Cards and containers */
+.choice-card,
+.entry-item,
+.form-group {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   FOCUS STATES FOR KEYBOARD NAVIGATION
+   ============================================ */
+
+/* Enhanced focus states for all interactive elements */
+button:focus-visible,
+.add-btn:focus-visible,
+.remove-btn:focus-visible,
+.download-btn:focus-visible,
+.export-btn:focus-visible,
+.save-draft-btn:focus-visible,
+.clear-all-btn:focus-visible,
+.table-remove-btn:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(26, 127, 163, 0.2);
+}
+
+input[type="text"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="tel"]:focus-visible,
+input[type="url"]:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+    border-color: var(--optimism-blue, #1a7fa3);
+    box-shadow: 0 0 0 4px rgba(26, 127, 163, 0.15);
+}
+
+a:focus-visible,
+.choice-card:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(26, 127, 163, 0.2);
+}
+
+/* Remove default outline for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Skip to main content link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 10000;
+    border-radius: 0 0 4px 0;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ============================================
+   LOADING SKELETONS
+   ============================================ */
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary, #F8FAFC) 0%,
+        var(--bg-hover, #E2E8F0) 50%,
+        var(--bg-secondary, #F8FAFC) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5em;
+}
+
+.skeleton-text:last-child {
+    margin-bottom: 0;
+}
+
+.skeleton-title {
+    height: 1.5em;
+    width: 60%;
+    margin-bottom: 1em;
+}
+
+.skeleton-input {
+    height: 40px;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.skeleton-button {
+    height: 40px;
+    width: 120px;
+    border-radius: 5px;
+}
+
+.skeleton-card {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 1em;
+}
+
+/* Loading overlay with skeleton */
+.loading-skeleton-container {
+    padding: var(--spacing-xl);
+    background: var(--bg-primary, white);
+    border-radius: 8px;
+}
+
+/* ============================================
+   EMPTY STATE ILLUSTRATIONS
+   ============================================ */
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl, 64px) var(--spacing-xl, 32px);
+    color: var(--text-tertiary, #475569);
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--spacing-lg, 24px);
+    opacity: 0.5;
+    color: var(--text-muted, #64748B);
+}
+
+.empty-state-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+.empty-state-title {
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--text-secondary, #334155);
+    margin-bottom: var(--spacing-sm, 8px);
+}
+
+.empty-state-description {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--text-tertiary, #475569);
+    margin-bottom: var(--spacing-lg, 24px);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-state-action {
+    margin-top: var(--spacing-md, 16px);
+}
+
+/* Empty state for sections */
+.section-empty-state {
+    padding: var(--spacing-xl, 32px);
+    text-align: center;
+    background: var(--bg-secondary, #F8FAFC);
+    border-radius: 8px;
+    border: 2px dashed var(--border-light, #E2E8F0);
+    margin: var(--spacing-md, 16px) 0;
+}
+
+/* ============================================
+   CONFIRMATION DIALOGS
+   ============================================ */
+
+.confirmation-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.confirmation-dialog-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirmation-dialog {
+    background: var(--bg-primary, white);
+    border-radius: 12px;
+    padding: var(--spacing-xl, 32px);
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.confirmation-dialog-overlay.active .confirmation-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.confirmation-dialog-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-lg, 24px);
+    background: rgba(26, 127, 163, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--optimism-blue, #1a7fa3);
+}
+
+.confirmation-dialog-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.confirmation-dialog-title {
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--text-primary, #0F172A);
+    margin-bottom: var(--spacing-sm, 8px);
+    text-align: center;
+}
+
+.confirmation-dialog-message {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--text-secondary, #334155);
+    margin-bottom: var(--spacing-xl, 32px);
+    text-align: center;
+    line-height: var(--line-height-relaxed, 1.75);
+}
+
+.confirmation-dialog-actions {
+    display: flex;
+    gap: var(--spacing-md, 16px);
+    justify-content: center;
+}
+
+.confirmation-dialog-btn {
+    padding: var(--spacing-sm, 8px) var(--spacing-lg, 24px);
+    border-radius: 6px;
+    font-weight: var(--font-weight-semibold, 600);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: var(--font-size-base, 1rem);
+    min-width: 100px;
+}
+
+.confirmation-dialog-btn-cancel {
+    background: var(--bg-secondary, #F8FAFC);
+    color: var(--text-secondary, #334155);
+    border: 2px solid var(--border-light, #E2E8F0);
+}
+
+.confirmation-dialog-btn-cancel:hover {
+    background: var(--bg-hover, #E2E8F0);
+    border-color: var(--border-medium, #CBD5E1);
+}
+
+.confirmation-dialog-btn-confirm {
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+}
+
+.confirmation-dialog-btn-confirm:hover {
+    background: var(--optimism-blue-dark, #0f5f7a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 127, 163, 0.3);
+}
+
+.confirmation-dialog-btn:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   UNDO/REDO FUNCTIONALITY
+   ============================================ */
+
+.undo-redo-container {
+    display: none !important; /* Removed per user request */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+
+.undo-redo-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-primary, white);
+    border: 2px solid var(--border-light, #E2E8F0);
+    color: var(--text-secondary, #334155);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.undo-redo-btn:hover:not(:disabled) {
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+    border-color: var(--optimism-blue, #1a7fa3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 127, 163, 0.3);
+}
+
+.undo-redo-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.undo-redo-btn:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+}
+
+.undo-redo-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Undo notification */
+.undo-notification {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: var(--bg-primary, white);
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 300px;
+}
+
+.undo-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.undo-notification-message {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-secondary, #334155);
+}
+
+.undo-notification-btn {
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-semibold, 600);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.undo-notification-btn:hover {
+    background: var(--optimism-blue-dark, #0f5f7a);
+}
+
+/* ============================================
+   ONBOARDING TOUR
+   ============================================ */
+
+.tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.tour-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tour-highlight {
+    position: absolute;
+    border: 3px solid var(--optimism-blue, #1a7fa3);
+    border-radius: 8px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 20px rgba(26, 127, 163, 0.5);
+    z-index: 10002;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.tour-tooltip {
+    position: absolute;
+    background: var(--bg-primary, white);
+    border-radius: 12px;
+    padding: var(--spacing-lg, 24px);
+    max-width: 350px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10003;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tour-tooltip.active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.tour-tooltip-title {
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--text-primary, #0F172A);
+    margin-bottom: var(--spacing-sm, 8px);
+}
+
+.tour-tooltip-description {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--text-secondary, #334155);
+    margin-bottom: var(--spacing-lg, 24px);
+    line-height: var(--line-height-relaxed, 1.75);
+}
+
+.tour-tooltip-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md, 16px);
+}
+
+.tour-tooltip-progress {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-tertiary, #475569);
+}
+
+.tour-tooltip-buttons {
+    display: flex;
+    gap: var(--spacing-sm, 8px);
+}
+
+.tour-tooltip-btn {
+    padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+    border-radius: 6px;
+    font-weight: var(--font-weight-semibold, 600);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: var(--font-size-sm, 0.875rem);
+}
+
+.tour-tooltip-btn-secondary {
+    background: var(--bg-secondary, #F8FAFC);
+    color: var(--text-secondary, #334155);
+    border: 2px solid var(--border-light, #E2E8F0);
+}
+
+.tour-tooltip-btn-secondary:hover {
+    background: var(--bg-hover, #E2E8F0);
+}
+
+.tour-tooltip-btn-primary {
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+}
+
+.tour-tooltip-btn-primary:hover {
+    background: var(--optimism-blue-dark, #0f5f7a);
+    transform: translateY(-1px);
+}
+
+.tour-tooltip-btn:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   HELP MODAL & KEYBOARD SHORTCUTS
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--bg-primary, white);
+    border-radius: 12px;
+    padding: var(--spacing-xl, 32px);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg, 24px);
+    padding-bottom: var(--spacing-md, 16px);
+    border-bottom: 2px solid var(--border-light, #E2E8F0);
+}
+
+.modal-title {
+    font-size: var(--font-size-2xl, 1.5rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--text-primary, #0F172A);
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary, #F8FAFC);
+    border: none;
+    color: var(--text-secondary, #334155);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: var(--bg-hover, #E2E8F0);
+    transform: rotate(90deg);
+}
+
+.modal-close:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+}
+
+.modal-content {
+    color: var(--text-secondary, #334155);
+    line-height: var(--line-height-relaxed, 1.75);
+}
+
+.modal-section {
+    margin-bottom: var(--spacing-xl, 32px);
+}
+
+.modal-section-title {
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--text-primary, #0F172A);
+    margin-bottom: var(--spacing-md, 16px);
+}
+
+.modal-list {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-list-item {
+    padding: var(--spacing-sm, 8px) 0;
+    border-bottom: 1px solid var(--border-light, #E2E8F0);
+}
+
+.modal-list-item:last-child {
+    border-bottom: none;
+}
+
+.modal-list-item strong {
+    color: var(--text-primary, #0F172A);
+    display: inline-block;
+    min-width: 200px;
+}
+
+/* Keyboard shortcut display */
+.keyboard-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.keyboard-key {
+    background: var(--bg-secondary, #F8FAFC);
+    border: 1px solid var(--border-medium, #CBD5E1);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--text-secondary, #334155);
+    font-family: monospace;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.keyboard-key-plus {
+    color: var(--text-muted, #64748B);
+    font-size: var(--font-size-sm, 0.875rem);
+}
+
+/* Help button in navbar */
+.help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    background: var(--bg-primary, white);
+    border: 2px solid var(--border-light, #E2E8F0);
+    color: var(--text-secondary, #334155);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: var(--font-weight-bold, 700);
+    font-size: var(--font-size-lg, 1.125rem);
+}
+
+.help-btn:hover {
+    background: var(--optimism-blue, #1a7fa3);
+    color: white;
+    border-color: var(--optimism-blue, #1a7fa3);
+    transform: scale(1.1);
+}
+
+.help-btn:focus-visible {
+    outline: 3px solid var(--optimism-blue, #1a7fa3);
+    outline-offset: 2px;
+}
+
+/* Keyboard shortcut hint */
+.keyboard-shortcut-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--bg-primary, white);
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-tertiary, #475569);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-light, #E2E8F0);
+}
+
+.keyboard-shortcut-hint-key {
+    background: var(--bg-secondary, #F8FAFC);
+    border: 1px solid var(--border-medium, #CBD5E1);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-weight: var(--font-weight-semibold, 600);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .confirmation-dialog,
+    .modal {
+        width: 95%;
+        padding: var(--spacing-lg, 24px);
+    }
+
+    .undo-redo-container {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .tour-tooltip {
+        max-width: 90%;
+    }
+
+    .keyboard-shortcut-hint {
+        bottom: 80px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+    }
+}

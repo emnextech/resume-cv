@@ -40,21 +40,18 @@ class PreviewManager {
     }
 
     getCurrentData() {
-        const currentTab = window.tabManager ? window.tabManager.getCurrentTab() : 'cv';
-        if (currentTab === 'cv') {
-            return window.cvFormManager ? window.cvFormManager.getData() : {};
-        } else {
-            return window.resumeFormManager ? window.resumeFormManager.getData() : {};
-        }
+        return window.cvFormManager ? window.cvFormManager.getData() : {};
     }
 
     isFieldEmpty(value) {
-        return !value || value.trim() === '';
+        if (Array.isArray(value)) {
+            return value.length === 0;
+        }
+        return !value || (typeof value === 'string' && value.trim() === '');
     }
 
     getPlaceholderData(type) {
-        if (type === 'cv') {
-            return {
+        return {
                 name: 'John Banda',
                 email: 'john.banda@email.com',
                 phone: '+123 456 7890',
@@ -86,36 +83,28 @@ class PreviewManager {
                 projects: [
                     { name: 'E-Commerce Platform', tech: 'Python, Django, React', description: 'Full-stack e-commerce solution with payment integration.' }
                 ],
-                skills: 'Python, JavaScript, React, Node.js, Networking, UI Design'
-            };
-        } else {
-            return {
-                name: 'Sarah Johnson',
-                email: 'sarah.j@email.com',
-                phone: '+1 (555) 123-4567',
-                location: 'New York, NY',
-                linkedin: 'linkedin.com/in/sarahjohnson',
-                summary: 'Results-driven software engineer with 3+ years of experience building scalable web applications. Passionate about clean code and user experience.',
-                skills: 'JavaScript, React, Node.js, Python, AWS, Docker, Git',
-                work: [
-                    { title: 'Software Engineer', company: 'TechStart Inc.', period: '2021-Present', achievements: '• Led development of customer portal\n• Implemented CI/CD pipeline\n• Mentored 2 junior developers' }
-                ],
-                projects: [
-                    { name: 'Task Management App', tech: 'React, Node.js, MongoDB', description: 'Full-stack application for team collaboration.' }
-                ],
-                education: [
-                    { year: '2015-2019', level: 'Bachelor', school: 'State University', qualification: 'B.S. Computer Science' },
-                    { year: '2011-2015', level: 'High School', school: 'Central High School', qualification: 'Diploma' }
-                ],
-                certifications: [
-                    { name: 'AWS Solutions Architect', year: '2022' }
+                skills: ['Python', 'JavaScript', 'React', 'Node.js', 'Networking', 'UI Design'],
+                references: [
+                    { name: 'Dr. Sarah Johnson', position: 'Senior Software Engineer', phone: '+1 234 567 8900', email: 'sarah.johnson@email.com' },
+                    { name: 'Prof. Michael Chen', position: 'Professor of Computer Science', phone: '+1 234 567 8901', email: 'michael.chen@university.edu' }
                 ]
             };
-        }
     }
 
     getValue(field, data, placeholderData, isPlaceholder = false) {
-        const value = data[field] || '';
+        const value = data[field];
+        
+        // Special handling for skills array
+        if (field === 'skills') {
+            if (Array.isArray(value) && value.length > 0) {
+                return value;
+            }
+            if (isPlaceholder) {
+                return Array.isArray(placeholderData[field]) ? placeholderData[field] : [];
+            }
+            return [];
+        }
+        
         const isEmpty = this.isFieldEmpty(value);
         
         if (isEmpty && isPlaceholder) {
@@ -145,9 +134,8 @@ class PreviewManager {
         const previewContent = document.getElementById('preview-content');
         if (!previewContent) return;
 
-        const currentTab = window.tabManager ? window.tabManager.getCurrentTab() : 'cv';
         const data = this.getCurrentData();
-        const placeholderData = this.getPlaceholderData(currentTab);
+        const placeholderData = this.getPlaceholderData('cv');
 
         // Clear and set template, color, and font classes
         previewContent.className = `preview-content template-${this.currentTemplate} color-${this.currentColor} font-${this.currentFont}`;
@@ -158,11 +146,27 @@ class PreviewManager {
         // Apply font
         this.applyFont(previewContent);
 
-        if (currentTab === 'cv') {
-            previewContent.innerHTML = this.renderCV(data, placeholderData);
-        } else {
-            previewContent.innerHTML = this.renderResume(data, placeholderData);
-        }
+        previewContent.innerHTML = this.renderCV(data, placeholderData);
+        
+        // Remove any existing page count indicators and page break indicators
+        setTimeout(() => {
+            const existingPageCount = document.getElementById('page-count-indicator');
+            if (existingPageCount) {
+                existingPageCount.remove();
+            }
+            const existingIndicators = previewContent.querySelectorAll('.page-break-indicator');
+            existingIndicators.forEach(ind => ind.remove());
+        }, 100);
+    }
+    
+    showPageCount(count) {
+        // Page count indicator removed per user request
+        // Do nothing
+    }
+    
+    hidePageCount() {
+        // Page count indicator removed per user request
+        // Do nothing
     }
 
     applyColor(element) {
@@ -208,12 +212,12 @@ class PreviewManager {
 
         let html = `
             <div class="preview-header-section">
-                <div class="preview-name">${name || 'Your Name'}</div>
+                <div class="preview-name">${this.escapeHtml(name || 'Your Name')}</div>
                 <div class="preview-contact">
-                    ${email ? email + ' • ' : ''}
-                    ${phone ? phone + ' • ' : ''}
-                    ${address || ''}
-                    ${website ? ' • ' + website : ''}
+                    ${email ? this.escapeHtml(email) + ' • ' : ''}
+                    ${phone ? this.escapeHtml(phone) + ' • ' : ''}
+                    ${this.escapeHtml(address || '')}
+                    ${website ? ' • ' + this.escapeHtml(website) : ''}
                 </div>
             </div>
         `;
@@ -222,30 +226,32 @@ class PreviewManager {
             html += `<div class="preview-summary">${this.formatText(summary)}</div>`;
         }
 
-        // Education
+        // Education - Render as table
         const education = this.getArrayValue(data.education, placeholderData.education, true);
         if (education && education.length > 0) {
-            html += '<div class="preview-section-title">Academic Qualifications</div>';
-            education.forEach(edu => {
-                const year = edu.year || '';
-                const level = edu.level || '';
-                const school = edu.school || '';
-                const qualification = edu.qualification || '';
-                
-                // Only show if at least one field has content
-                if (year || level || school || qualification) {
-                    html += `
-                        <div class="preview-entry">
-                            <div class="preview-entry-title">${qualification || level || 'Education Entry'}</div>
-                            <div class="preview-entry-subtitle">
-                                ${school ? school : ''}
-                                ${year ? (school ? ' • ' : '') + year : ''}
-                                ${level && !qualification ? (school || year ? ' • ' : '') + level : ''}
-                            </div>
-                        </div>
-                    `;
-                }
+            // Filter out completely empty entries
+            const validEducation = education.filter(edu => {
+                return (edu.year && edu.year.trim()) || 
+                       (edu.level && edu.level.trim()) || 
+                       (edu.school && edu.school.trim()) || 
+                       (edu.qualification && edu.qualification.trim());
             });
+            
+            if (validEducation.length > 0) {
+                html += '<div class="preview-section-title">Academic Qualifications</div>';
+                html += '<table class="preview-education-table">';
+                html += '<thead><tr><th>Year</th><th>Level</th><th>School</th><th>Qualification</th></tr></thead>';
+                html += '<tbody>';
+                validEducation.forEach(edu => {
+                    html += '<tr>';
+                    html += `<td>${this.escapeHtml(edu.year || '')}</td>`;
+                    html += `<td>${this.escapeHtml(edu.level || '')}</td>`;
+                    html += `<td>${this.escapeHtml(edu.school || '')}</td>`;
+                    html += `<td>${this.escapeHtml(edu.qualification || '')}</td>`;
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+            }
         }
 
         // Work Experience
@@ -255,8 +261,8 @@ class PreviewManager {
             work.forEach(w => {
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${w.title || ''}</div>
-                        <div class="preview-entry-subtitle">${w.company || ''} ${w.period ? '• ' + w.period : ''}</div>
+                        <div class="preview-entry-title">${this.escapeHtml(w.title || '')}</div>
+                        <div class="preview-entry-subtitle">${this.escapeHtml(w.company || '')} ${w.period ? '• ' + this.escapeHtml(w.period) : ''}</div>
                         ${w.description ? `<div class="preview-entry-details">${this.formatText(w.description)}</div>` : ''}
                     </div>
                 `;
@@ -270,8 +276,8 @@ class PreviewManager {
             research.forEach(r => {
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${r.title || ''}</div>
-                        <div class="preview-entry-subtitle">${r.institution || ''} ${r.period ? '• ' + r.period : ''}</div>
+                        <div class="preview-entry-title">${this.escapeHtml(r.title || '')}</div>
+                        <div class="preview-entry-subtitle">${this.escapeHtml(r.institution || '')} ${r.period ? '• ' + this.escapeHtml(r.period) : ''}</div>
                         ${r.description ? `<div class="preview-entry-details">${this.formatText(r.description)}</div>` : ''}
                     </div>
                 `;
@@ -285,8 +291,8 @@ class PreviewManager {
             publications.forEach(pub => {
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${pub.title || ''}</div>
-                        <div class="preview-entry-subtitle">${pub.venue || ''} ${pub.year ? '• ' + pub.year : ''}</div>
+                        <div class="preview-entry-title">${this.escapeHtml(pub.title || '')}</div>
+                        <div class="preview-entry-subtitle">${this.escapeHtml(pub.venue || '')} ${pub.year ? '• ' + this.escapeHtml(pub.year) : ''}</div>
                     </div>
                 `;
             });
@@ -299,8 +305,8 @@ class PreviewManager {
             certifications.forEach(cert => {
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${cert.name || ''}</div>
-                        <div class="preview-entry-subtitle">${cert.issuer || ''} ${cert.year ? '• ' + cert.year : ''}</div>
+                        <div class="preview-entry-title">${this.escapeHtml(cert.name || '')}</div>
+                        <div class="preview-entry-subtitle">${this.escapeHtml(cert.issuer || '')} ${cert.year ? '• ' + this.escapeHtml(cert.year) : ''}</div>
                     </div>
                 `;
             });
@@ -313,8 +319,8 @@ class PreviewManager {
             conferences.forEach(conf => {
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${conf.name || ''}</div>
-                        <div class="preview-entry-subtitle">${conf.location || ''} ${conf.year ? '• ' + conf.year : ''}</div>
+                        <div class="preview-entry-title">${this.escapeHtml(conf.name || '')}</div>
+                        <div class="preview-entry-subtitle">${this.escapeHtml(conf.location || '')} ${conf.year ? '• ' + this.escapeHtml(conf.year) : ''}</div>
                     </div>
                 `;
             });
@@ -349,120 +355,46 @@ class PreviewManager {
         }
 
         // Skills
-        if (skills) {
+        if (skills && (Array.isArray(skills) ? skills.length > 0 : skills.trim())) {
             html += '<div class="preview-section-title">Skills</div>';
-            const skillsArray = skills.split(/[,\n]/).map(s => s.trim()).filter(s => s);
-            html += '<div class="preview-skills">';
-            skillsArray.forEach(skill => {
-                html += `<span class="preview-skill-item">${skill}</span>`;
-            });
-            html += '</div>';
+            // Handle both array and string formats for backward compatibility
+            const skillsArray = Array.isArray(skills) 
+                ? skills.filter(s => s && s.trim())
+                : skills.split(/[,\n]/).map(s => s.trim()).filter(s => s);
+            
+            if (skillsArray.length > 0) {
+                html += '<div class="preview-skills">';
+                skillsArray.forEach(skill => {
+                    html += `<span class="preview-skill-item">${this.escapeHtml(skill)}</span>`;
+                });
+                html += '</div>';
+            }
         }
 
-        return html;
-    }
-
-    renderResume(data, placeholderData) {
-        const name = this.getValue('name', data, placeholderData, true);
-        const email = this.getValue('email', data, placeholderData, true);
-        const phone = this.getValue('phone', data, placeholderData, true);
-        const location = this.getValue('location', data, placeholderData, true);
-        const linkedin = this.getValue('linkedin', data, placeholderData, true);
-        const summary = this.getValue('summary', data, placeholderData, true);
-        const skills = this.getValue('skills', data, placeholderData, true);
-
-        let html = `
-            <div class="preview-header-section">
-                <div class="preview-name">${name || 'Your Name'}</div>
-                <div class="preview-contact">
-                    ${email ? email + ' • ' : ''}
-                    ${phone ? phone + ' • ' : ''}
-                    ${location || ''}
-                    ${linkedin ? ' • ' + linkedin : ''}
-                </div>
-            </div>
-        `;
-
-        if (summary) {
-            html += `<div class="preview-summary">${this.formatText(summary)}</div>`;
-        }
-
-        // Skills
-        if (skills) {
-            html += '<div class="preview-section-title">Key Skills</div>';
-            const skillsArray = skills.split(/[,\n]/).map(s => s.trim()).filter(s => s);
-            html += '<div class="preview-skills">';
-            skillsArray.forEach(skill => {
-                html += `<span class="preview-skill-item">${skill}</span>`;
-            });
-            html += '</div>';
-        }
-
-        // Work Experience
-        const work = this.getArrayValue(data.work, placeholderData.work, true);
-        if (work && work.length > 0) {
-            html += '<div class="preview-section-title">Work Experience</div>';
-            work.forEach(w => {
-                html += `
-                    <div class="preview-entry">
-                        <div class="preview-entry-title">${w.title || ''}</div>
-                        <div class="preview-entry-subtitle">${w.company || ''} ${w.period ? '• ' + w.period : ''}</div>
-                        ${w.achievements ? `<div class="preview-entry-details">${this.formatText(w.achievements)}</div>` : ''}
-                    </div>
-                `;
-            });
-        }
-
-        // Projects
-        const projects = this.getArrayValue(data.projects, placeholderData.projects, true);
-        if (projects && projects.length > 0) {
-            html += '<div class="preview-section-title">Projects</div>';
-            projects.forEach(proj => {
-                html += `
-                    <div class="preview-entry">
-                        <div class="preview-entry-title">${proj.name || ''}</div>
-                        <div class="preview-entry-subtitle">${proj.tech || ''}</div>
-                        ${proj.description ? `<div class="preview-entry-details">${this.formatText(proj.description)}</div>` : ''}
-                    </div>
-                `;
-            });
-        }
-
-        // Education
-        const education = this.getArrayValue(data.education, placeholderData.education, true);
-        if (education && education.length > 0) {
-            html += '<div class="preview-section-title">Academic Qualifications</div>';
-            education.forEach(edu => {
-                const year = edu.year || '';
-                const level = edu.level || '';
-                const school = edu.school || '';
-                const qualification = edu.qualification || '';
+        // References
+        const references = this.getArrayValue(data.references, placeholderData.references, true);
+        if (references && references.length > 0) {
+            html += '<div class="preview-section-title">References</div>';
+            references.forEach(ref => {
+                const name = this.escapeHtml(ref.name || '');
+                const position = this.escapeHtml(ref.position || '');
+                const phone = this.escapeHtml(ref.phone || '');
+                const email = this.escapeHtml(ref.email || '');
                 
-                // Only show if at least one field has content
-                if (year || level || school || qualification) {
-                    html += `
-                        <div class="preview-entry">
-                            <div class="preview-entry-title">${qualification || level || 'Education Entry'}</div>
-                            <div class="preview-entry-subtitle">
-                                ${school ? school : ''}
-                                ${year ? (school ? ' • ' : '') + year : ''}
-                                ${level && !qualification ? (school || year ? ' • ' : '') + level : ''}
-                            </div>
-                        </div>
-                    `;
+                let contactInfo = '';
+                if (phone && email) {
+                    contactInfo = `${phone} • ${email}`;
+                } else if (phone) {
+                    contactInfo = phone;
+                } else if (email) {
+                    contactInfo = email;
                 }
-            });
-        }
-
-        // Certifications
-        const certifications = this.getArrayValue(data.certifications, placeholderData.certifications, true);
-        if (certifications && certifications.length > 0) {
-            html += '<div class="preview-section-title">Certifications</div>';
-            certifications.forEach(cert => {
+                
                 html += `
                     <div class="preview-entry">
-                        <div class="preview-entry-title">${cert.name || ''}</div>
-                        ${cert.year ? `<div class="preview-entry-subtitle">${cert.year}</div>` : ''}
+                        <div class="preview-entry-title">${name}</div>
+                        ${position ? `<div class="preview-entry-subtitle">${position}</div>` : ''}
+                        ${contactInfo ? `<div class="preview-entry-details">${contactInfo}</div>` : ''}
                     </div>
                 `;
             });
@@ -470,11 +402,25 @@ class PreviewManager {
 
         return html;
     }
+
 
     formatText(text) {
         if (!text) return '';
-        // Convert newlines to <br>
-        return text.replace(/\n/g, '<br>').replace(/•/g, '•');
+        // Escape HTML to prevent XSS
+        const escapeHtml = (str) => {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        };
+        // Convert newlines to <br> after escaping
+        return escapeHtml(text).replace(/\n/g, '<br>').replace(/•/g, '•');
+    }
+    
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     getCurrentTemplate() {
