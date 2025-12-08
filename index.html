@@ -54,6 +54,19 @@
       type="text/javascript"
       src="//pl28218214.effectivegatecpm.com/a7/91/ba/a791ba44f331f3ab1408d83610d095f2.js"
     ></script>
+    <!-- Additional Ad Script -->
+    <script>
+    (function(mbnscs){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = mbnscs || {};
+    s.src = "//dead-hour.com/b.XLV/sWd/Gtlt0ZYfWqcN/TeFmx9uutZoU/lckHPLTGYf3iM_jPIr1BOFTgIDtLNSjgckybM/jhUz5dMiwb";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
+    </script>
     <style>
         * {
             margin: 0;
@@ -75,6 +88,101 @@
             padding: 40px 20px;
             flex: 1;
             width: 100%;
+            position: relative;
+        }
+
+        /* Desktop Sidebar Layout */
+        .main-content-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .sidebar-ad {
+            width: 300px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar-ad-left {
+            order: -1;
+        }
+
+        .sidebar-ad-right {
+            order: 1;
+        }
+
+        .content-area {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Mobile Ad Card */
+        .mobile-ad-card {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .mobile-ad-card > div {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        /* Sidebar Ad Styling */
+        .sidebar-ad > div {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+        }
+
+        .sidebar-ad iframe,
+        .sidebar-ad div[id*="ad"],
+        .sidebar-ad div[id*="ad-container"],
+        .sidebar-ad div[class*="ad"],
+        .sidebar-ad ins {
+            max-width: 100% !important;
+            width: 100% !important;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .mobile-ad-card iframe,
+        .mobile-ad-card div[id*="ad"],
+        .mobile-ad-card div[id*="ad-container"],
+        .mobile-ad-card div[class*="ad"],
+        .mobile-ad-card ins {
+            max-width: 100% !important;
+            width: 100% !important;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Prevent ads from breaking layout */
+        .sidebar-ad *,
+        .mobile-ad-card * {
+            max-width: 100% !important;
+            box-sizing: border-box;
         }
 
         /* Hero Section */
@@ -436,6 +544,25 @@
 
 
         /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .main-content-wrapper {
+                flex-direction: column;
+                padding: 0 15px;
+            }
+
+            .sidebar-ad {
+                display: none;
+            }
+
+            .mobile-ad-card {
+                display: block;
+            }
+
+            .content-area {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .landing-container {
                 padding: 20px 15px;
@@ -1032,14 +1159,28 @@
             </div>
         </div>
 
-        <!-- Ad Container 1 -->
-        <div class="ad-container">
-            <div>
-                <div id="SocialBar_1"></div>
-            </div>
+        <!-- Mobile Ad Card (shown only on mobile) -->
+        <div class="mobile-ad-card">
+            <div id="mobile-ad-container"></div>
         </div>
 
-        <!-- FAQ Section -->
+        <!-- Desktop Sidebar Layout -->
+        <div class="main-content-wrapper">
+            <!-- Left Sidebar Ad (Desktop Only) -->
+            <aside class="sidebar-ad sidebar-ad-left">
+                <div id="sidebar-ad-left"></div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <!-- Ad Container 1 -->
+                <div class="ad-container">
+                    <div>
+                        <div id="SocialBar_1"></div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
         <section id="faq-section" class="faq-section">
             <h2>Frequently Asked Questions</h2>
             
@@ -1125,12 +1266,21 @@
             </div>
         </section>
 
-        <!-- Ad Container 3 (Footer Area) -->
-        <div class="ad-container" style="margin-top: 60px; margin-bottom: 20px;">
-            <div>
-                <div id="SocialBar_Footer"></div>
+                <!-- Ad Container 3 (Footer Area) -->
+                <div class="ad-container" style="margin-top: 60px; margin-bottom: 20px;">
+                    <div>
+                        <div id="SocialBar_Footer"></div>
+                    </div>
+                </div>
             </div>
+            <!-- End Content Area -->
+
+            <!-- Right Sidebar Ad (Desktop Only) -->
+            <aside class="sidebar-ad sidebar-ad-right">
+                <div id="sidebar-ad-right"></div>
+            </aside>
         </div>
+        <!-- End Main Content Wrapper -->
     </div>
 
     <!-- Footer -->
@@ -1229,9 +1379,29 @@
             });
 
             // Observe ad containers for changes
-            document.querySelectorAll('.ad-container').forEach(container => {
+            document.querySelectorAll('.ad-container, .sidebar-ad, .mobile-ad-card').forEach(container => {
                 observer.observe(container, { childList: true, subtree: true });
             });
+
+            // Manage sidebar and mobile ad containers
+            function manageSidebarAds() {
+                const sidebarAds = document.querySelectorAll('.sidebar-ad > div');
+                const mobileAd = document.querySelector('.mobile-ad-card > div');
+                
+                [].forEach.call(sidebarAds, function(ad) {
+                    ad.style.maxWidth = '100%';
+                    ad.style.overflow = 'hidden';
+                });
+
+                if (mobileAd) {
+                    mobileAd.style.maxWidth = '100%';
+                    mobileAd.style.overflow = 'hidden';
+                }
+            }
+
+            manageSidebarAds();
+            setTimeout(manageSidebarAds, 2000);
+            setTimeout(manageSidebarAds, 5000);
         })();
 
         // Smooth transition when navigating to builder with shimmer effect
